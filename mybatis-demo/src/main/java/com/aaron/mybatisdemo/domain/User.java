@@ -1,13 +1,15 @@
 package com.aaron.mybatisdemo.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 用户domain类
  */
 public class User {
     //用户ID
-    private int id;
+    private Integer id;
     //姓名
     private String username;
     //生日
@@ -16,12 +18,14 @@ public class User {
     private String sex;
     //地址
     private String address;
+    //订单集合
+    private List<Order> orders = new ArrayList<Order>();
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -57,6 +61,14 @@ public class User {
         this.address = address;
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -65,6 +77,7 @@ public class User {
                 ", birthday=" + birthday +
                 ", sex='" + sex + '\'' +
                 ", address='" + address + '\'' +
+                ", orders=" + orders +
                 '}';
     }
 }

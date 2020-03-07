@@ -3,16 +3,51 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aaron.mybatisdemo.mapper.UserMapper">
+    <!--结果映射集 数据库列名和domain对象属性名映射,
+    当数据库字段和实体类属性不一致时可以使用,或者使用数据库别名方式-->
+    <resultMap id="userResult" type="user">
+        <!--id 主键映射-->
+        <id column="id" property="id"/>
+        <!--普通对象属性映射-->
+        <result column="username" property="username"/>
+        <result column="birthday" property="birthday"/>
+        <result column="address" property="address"/>
+        <result column="sex" property="sex"/>
+    </resultMap>
+    <!--一对多结果集-->
+    <resultMap id="userOrdersMap" type="com.aaron.mybatisdemo.domain.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="birthday" property="birthday"/>
+        <result column="address" property="address"/>
+        <result column="sex" property="sex"/>
+        <collection property="orders" ofType="com.aaron.mybatisdemo.domain.Order">
+            <id column="id" property="id"/>
+            <result column="remark" property="remark"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="user_id" property="userId"/>
+        </collection>
+    </resultMap>
+    <!--SQL片段-->
+    <sql id="userColumn">
+        username,birthday,address,sex
+    </sql>
 
-    <select id="findUserById" parameterType="int" resultType="com.aaron.mybatisdemo.domain.User">
-        select * from user where id = #{id};
+    <!--parameterType 输入映射 resultType 输出映射 resultMap 结果映射集-->
+    <select id="findUserById" parameterType="int" resultMap="userResult">
+        select
+        <include refid="userColumn"/>
+        from user where id = #{id};
     </select>
 
-    <select id="findUserByName" parameterType="java.lang.String" resultType="com.aaron.mybatisdemo.domain.User">
-        select * from user where username like '%${value}%'
+    <select id="findUserByName" parameterType="java.lang.String" resultType="user">
+        select
+        <include refid="userColumn"/>
+        from user where username like '%${value}%'
     </select>
 
-    <insert id="insertUser" parameterType="com.aaron.mybatisdemo.domain.User">
+    <insert id="insertUser" parameterType="user">
         <!--主键返回 主键属性 主键生成是在插入前,插入后(mysql插入后生成) 返回结果类型-->
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
             select LAST_INSERT_ID() <!--mysql的主键返回函数-->
@@ -23,5 +58,21 @@
     <delete id="deleteUserById" parameterType="int">
         delete from user where id = #{id}
     </delete>
+    <!--传入参数是对象类型-->
+    <select id="queryUsersByCondition" parameterType="com.aaron.mybatisdemo.queryvo.UserQueryVO" resultType="user">
+        select
+        <include refid="userColumn"/>
+        from user where address = #{userQueryVO.address} and sex = #{userQueryVO.sex}
+    </select>
+    <!--输出参数是基本类型-->
+    <select id="selectUserCount" parameterType="com.aaron.mybatisdemo.queryvo.UserQueryVO" resultType="int">
+        select count(*) from user where address = #{address} and sex = #{sex}
+    </select>
 
+    <select id="selectOrdersByUserId" parameterType="int" resultMap="userOrdersMap">
+        select u.*,o.*
+        from user u
+        left join `order` o on u.id = o.user_id
+        where u.id = #{userId}
+    </select>
 </mapper>

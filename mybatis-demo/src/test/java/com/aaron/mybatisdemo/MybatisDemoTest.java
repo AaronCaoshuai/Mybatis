@@ -1,10 +1,13 @@
 package com.aaron.mybatisdemo;
 
 import com.aaron.mybatisdemo.dao.UserDao;
+import com.aaron.mybatisdemo.domain.Order;
 import com.aaron.mybatisdemo.domain.User;
 import com.aaron.mybatisdemo.impl.UserDaoImpl;
 import com.aaron.mybatisdemo.mapper.AnnotationUserMapper;
+import com.aaron.mybatisdemo.mapper.OrderMapper;
 import com.aaron.mybatisdemo.mapper.UserMapper;
+import com.aaron.mybatisdemo.queryvo.UserQueryVO;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -89,21 +92,75 @@ public class MybatisDemoTest {
     @Test
     public void testAnnotationProxyMapper() throws Exception{
         SqlSession session = sqlSessionFactory.openSession();
+        User insertUser = new User();
+        insertUser.setUsername("王五Annotation代理插入");
+        insertUser.setBirthday(new Date());
+        insertUser.setAddress("上海浦东");
+        insertUser.setSex("女");
         try{
             AnnotationUserMapper userMapper = session.getMapper(AnnotationUserMapper.class);
             User user = userMapper.findUserById(4);
             System.out.println(user);
             List<User> users = userMapper.findUserByName("李");
             System.out.println(users);
-            User insertUser = new User();
-            insertUser.setUsername("王五Annotation代理插入");
-            insertUser.setBirthday(new Date());
-            insertUser.setAddress("上海浦东");
-            insertUser.setSex("女");
             userMapper.insertUser(insertUser);
             System.out.println("mapper代理插入"+insertUser);
             userMapper.deleteUserById(2);
             session.commit();
+        }finally{
+            session.close();
+        }
+    }
+
+    @Test
+    public void testQueryUsersByCondition() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        UserQueryVO queryVO = new UserQueryVO();
+        queryVO.setAddress("上海浦东");
+        queryVO.setSex("女");
+        try{
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            List<User> users = userMapper.queryUsersByCondition(queryVO);
+            System.out.println(users);
+        }finally{
+            session.close();
+        }
+    }
+
+    @Test
+    public void testSelectUserCount() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        UserQueryVO queryVO = new UserQueryVO();
+        queryVO.setAddress("上海浦东");
+        queryVO.setSex("女");
+        try{
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            int userCount = userMapper.selectUserCount(queryVO);
+            System.out.println(userCount);
+        }finally{
+            session.close();
+        }
+    }
+
+    @Test
+    public void testSelectOrdersByUserId() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        try{
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            User user = userMapper.selectOrdersByUserId(15);
+            System.out.println(user);
+        }finally{
+            session.close();
+        }
+    }
+
+    @Test
+    public void testSelectUserByOrderId() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        try{
+            OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+            Order order = orderMapper.selectUserByOrderId(1);
+            System.out.println(order);
         }finally{
             session.close();
         }
