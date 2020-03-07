@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--mybatis在控制台输出SQL日志-->
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+    </settings>
+    <!-- mybatis 环境配置 -->
+    <environments default="dev">
+        <environment id="dev">
+            <!-- 事务管理器和事务作用域配置 -->
+            <transactionManager type="JDBC"/>
+                <!-- 数据源配置 -->
+                <dataSource type="POOLED">
+                    <property name="driver" value="com.mysql.jdbc.Driver"/>
+                    <!--数据库连接中要指定编码格式-->
+                    <property name="url" value="jdbc:mysql://127.0.0.1:3306/ssm?useUnicode=true&amp;characterEncoding=utf-8"/>
+                    <property name="username" value="root"/>
+                    <property name="password" value="root"/>
+                </dataSource>
+        </environment>
+    </environments>
+    <!-- 映射文件配置加载 -->
+    <mappers>
+        <!-- resource指定映射文件的类路径 -->
+        <mapper resource="mapper/UserDao.xml"/>
+        <mapper resource="mapper/UserMapper.xml"/>
+        <mapper class="com.aaron.mybatisdemo.mapper.AnnotationUserMapper"/>
+    </mappers>
+</configuration>
