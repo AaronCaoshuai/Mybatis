@@ -15,13 +15,41 @@
         <result column="sex" property="sex"/>
     </resultMap>
     <!--一对多结果集-->
-    <resultMap id="userOrdersMap" type="com.aaron.mybatisdemo.domain.User">
+    <resultMap id="userOrdersMap1" type="user">
         <id column="id" property="id"/>
         <result column="username" property="username"/>
         <result column="birthday" property="birthday"/>
         <result column="address" property="address"/>
         <result column="sex" property="sex"/>
-        <collection property="orders" ofType="com.aaron.mybatisdemo.domain.Order">
+        <collection property="orders" ofType="order">
+            <id column="id" property="id"/>
+            <result column="remark" property="remark"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="user_id" property="userId"/>
+        </collection>
+    </resultMap>
+    <!--一对多结果集 子查询订单信息
+        查询一个列表,及其每个对象下面的对象属性时,会出现n+1问题
+        1:一条sql查询一个列表
+        n:多条sql查询每个列表对象中的对象属性
+        会执行多条sql浪费数据库资源
+        解决方案:
+        1.MyBatis 能够对这样的查询进行延迟加载，因此可以将大量语句同时运行的开销分散开来。
+        然而，如果你加载记录列表之后立刻就遍历列表以获取嵌套的数据，就会触发所有的延迟加载查询，性能可能会变得很糟糕
+        2.关联的嵌套结果映射 可以使用级联的SQL语句一次性查询出结果集 见selectOrdersByUserId
+        3.从版本 3.2.3 开始，MyBatis 提供了另一种解决 N+1 查询问题的方法。
+          某些数据库允许存储过程返回多个结果集，或一次性执行多个语句，每个语句返回一个结果集。
+          我们可以利用这个特性，在不使用连接的情况下，只访问数据库一次就能获得相关数据。
+    -->
+    <resultMap id="userOrdersMap2" type="user">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="birthday" property="birthday"/>
+        <result column="address" property="address"/>
+        <result column="sex" property="sex"/>
+        <!-- 前提开启懒加载开关 fetchType是否使用延迟加载 eager 不使用 lazy 使用 默认为lazy -->
+        <collection property="orders" javaType="ArrayList" column="id" ofType="order"  select="selectOrders" fetchType="eager">
             <id column="id" property="id"/>
             <result column="remark" property="remark"/>
             <result column="create_time" property="createTime"/>
@@ -34,6 +62,19 @@
         username,birthday,address,sex
     </sql>
 
+    <!--findUserById findUserByName 中关于#和$的取值方式区别
+        1.#{}相当于JDBC SQL语句中的占位符? (PreparedStatement)
+          ${}:相当于JDBC SQL语句中的连接符合 + (Statement)
+        2.#{}:进行输入映射的时候，会对参数进行类型解析（如果是String类型，那么SQL语句会自动加上’’）
+          ${}:进行输入映射的时候，将参数原样输出到SQL语句中
+        3.#{}:如果进行简单类型（String、Date、8种基本类型的包装类）的输入映射时，#{}中参数名称可以任意
+          ${}:如果进行简单类型（String、Date、8种基本类型的包装类）的输入映射时，${}中参数名称必须是value\
+        4.${}:存在SQL注入问题 ，使用OR 1=1 关键字将查询条件忽略
+        使用场景:
+        #{}取值比较常见,参数传递,where条件判断等
+        ${}主要用于order by 的指定排序,表和列的特定输入条件
+        例如:select * from ${user} where ${username} = #{name} order by ${create_time};
+    -->
     <!--parameterType 输入映射 resultType 输出映射 resultMap 结果映射集-->
     <select id="findUserById" parameterType="int" resultMap="userResult">
         select
@@ -69,10 +110,17 @@
         select count(*) from user where address = #{address} and sex = #{sex}
     </select>
 
-    <select id="selectOrdersByUserId" parameterType="int" resultMap="userOrdersMap">
+    <select id="selectOrdersByUserId" parameterType="int" resultMap="userOrdersMap1">
         select u.*,o.*
         from user u
         left join `order` o on u.id = o.user_id
         where u.id = #{userId}
+    </select>
+
+    <select id="selectAllUserOrders" resultMap="userOrdersMap2">
+        select * from user;
+    </select>
+    <select id="selectOrders" parameterType="int" resultType="order">
+        select * from `order` where user_id = #{id}
     </select>
 </mapper>

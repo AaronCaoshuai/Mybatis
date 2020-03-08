@@ -40,6 +40,10 @@ public class MybatisDemoTest {
         userDao = new UserDaoImpl(sqlSessionFactory);
     }
 
+    /**
+     * 测试项目基础查询功能
+     * @throws Exception
+     */
     @Test
     public void testFindUserById() throws Exception{
         User user = userDao.findUserById(1);
@@ -48,12 +52,20 @@ public class MybatisDemoTest {
         System.out.println(user2);
     }
 
+    /**
+     * 测试项目基础查询功能
+     * @throws Exception
+     */
     @Test
     public void testFindUserByName() throws Exception{
         List<User> users = userDao.findUserByName("李");
         System.out.println(users);
     }
 
+    /**
+     * 测试项目基础插入功能
+     * @throws Exception
+     */
     @Test
     public void testInsertUser() throws Exception{
         User user = new User();
@@ -66,6 +78,10 @@ public class MybatisDemoTest {
         System.out.println("主键返回:"+user);
     }
 
+    /**
+     * 使用动态代理mapper接口模式开发
+     * @throws Exception
+     */
     @Test
     public void testXmlProxyMapper() throws Exception{
         SqlSession session = sqlSessionFactory.openSession();
@@ -89,6 +105,10 @@ public class MybatisDemoTest {
         }
     }
 
+    /**
+     * 使用注解sql方式开发
+     * @throws Exception
+     */
     @Test
     public void testAnnotationProxyMapper() throws Exception{
         SqlSession session = sqlSessionFactory.openSession();
@@ -112,6 +132,10 @@ public class MybatisDemoTest {
         }
     }
 
+    /**
+     * 对象传递测试
+     * @throws Exception
+     */
     @Test
     public void testQueryUsersByCondition() throws Exception{
         SqlSession session = sqlSessionFactory.openSession();
@@ -127,6 +151,10 @@ public class MybatisDemoTest {
         }
     }
 
+    /**
+     * 输入和输出类型是基本类型
+     * @throws Exception
+     */
     @Test
     public void testSelectUserCount() throws Exception{
         SqlSession session = sqlSessionFactory.openSession();
@@ -142,6 +170,10 @@ public class MybatisDemoTest {
         }
     }
 
+    /**
+     * 一对多结果映射集测试resultMap
+     * @throws Exception
+     */
     @Test
     public void testSelectOrdersByUserId() throws Exception{
         SqlSession session = sqlSessionFactory.openSession();
@@ -154,6 +186,10 @@ public class MybatisDemoTest {
         }
     }
 
+    /**
+     * 一对一结果映射集测试resultMap
+     * @throws Exception
+     */
     @Test
     public void testSelectUserByOrderId() throws Exception{
         SqlSession session = sqlSessionFactory.openSession();
@@ -166,5 +202,73 @@ public class MybatisDemoTest {
         }
     }
 
+    /**
+     * 级联查询n+1问题 解决方案见userMapper.xml中描述
+     * @throws Exception
+     */
+    @Test
+    public void testSelectAllUserOrders() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        try{
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            List<User> users = userMapper.selectAllUserOrders();
+            System.out.println(users);
+        }finally{
+            session.close();
+        }
+    }
 
+    /**
+     *  延迟加载开启 侵入式延迟加载关闭 测试
+     * @throws Exception
+     */
+    @Test
+    public void testAggressiveLazyLoadingFalse() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        try{
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            List<User> users = userMapper.selectAllUserOrders();
+            System.out.println(users);
+            for (User user : users){
+                System.out.println("深度延迟加载"+user.getOrders());
+            }
+        }finally{
+            session.close();
+        }
+    }
+
+    /**
+     *  延迟加载开启 侵入式延迟加载开启 测试
+     * @throws Exception
+     */
+    @Test
+    public void testAggressiveLazyLoadingTrue() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        try{
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            List<User> users = userMapper.selectAllUserOrders();
+            for (User user : users){
+                System.out.println("侵入式延迟加载"+user.getId());
+            }
+        }finally{
+            session.close();
+        }
+    }
+
+    /**
+     *  延迟加载开启 对于特定级联查询不开启懒加载 测试
+     * @throws Exception
+     */
+    @Test
+    public void testFetchTypeEager() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        try{
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            System.out.println("特定级联关系子查询不开启懒加载");
+            List<User> users = userMapper.selectAllUserOrders();
+            System.out.println("特定级联关系子查询不开启懒加载");
+        }finally{
+            session.close();
+        }
+    }
 }

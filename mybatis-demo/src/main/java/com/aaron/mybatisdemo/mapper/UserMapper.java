@@ -63,4 +63,11 @@ public interface UserMapper {
      * @throws Exception
      */
     User selectOrdersByUserId(Integer userId) throws Exception;
+
+    /**
+     * 查询所有的用户已经他们的订单 n+1 问题
+     * @return
+     * @throws Exception
+     */
+    List<User> selectAllUserOrders() throws Exception;
 }
