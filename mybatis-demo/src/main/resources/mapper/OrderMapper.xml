@@ -28,4 +28,27 @@
         from `order` o where o.id = #{orderId}
     </select>
 
+    <!--在进行批量插入返回主键id时，不能使用@Param注解，collection 使用list，主键返回使用：useGeneratedKeys="true" keyProperty="id"
+    单条使用<selectKey> 或者使用 useGeneratedKeys="true" keyProperty="id"-->
+    <insert id="batchInsertOrdres" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        <!-- 动态SQL实际上就是SQL的拼接处理 以及一些逻辑判断等
+            if
+            choose (when, otherwise)
+            trim (where, set)
+            foreach
+        -->
+        <if test="list.size >0">
+                insert into `order`(remark,create_time,update_time,user_id) values
+                <!-- collection：指定输入的集合参数的参数名称 -->
+                <!-- item：声明集合参数中的元素变量名 -->
+                <!-- open：集合遍历时，需要拼接到遍历sql语句的前面 -->
+                <!-- close：集合遍历时，需要拼接到遍历sql语句的后面 -->
+                <!-- separator：集合遍历时，需要拼接到遍历sql语句之间的分隔符号 -->
+                <!--如果parameterType不是POJO类型，而是List或者Array的话，那么foreach语句中，collection属性值需要固定写死为list或者array。-->
+                <foreach collection="list" item="order" index="index" separator=",">
+                    (#{order.remark},#{order.createTime},#{order.updateTime},#{order.userId})
+                </foreach>
+        </if>
+    </insert>
+
 </mapper>

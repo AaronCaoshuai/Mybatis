@@ -59,7 +59,7 @@
     </resultMap>
     <!--SQL片段-->
     <sql id="userColumn">
-        username,birthday,address,sex
+        id,username,birthday,address,sex
     </sql>
 
     <!--findUserById findUserByName 中关于#和$的取值方式区别
@@ -88,11 +88,11 @@
         from user where username like '%${value}%'
     </select>
 
-    <insert id="insertUser" parameterType="user">
-        <!--主键返回 主键属性 主键生成是在插入前,插入后(mysql插入后生成) 返回结果类型-->
+    <insert id="insertUser" parameterType="user" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+       <!-- &lt;!&ndash;主键返回 主键属性 主键生成是在插入前,插入后(mysql插入后生成) 返回结果类型&ndash;&gt;
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
-            select LAST_INSERT_ID() <!--mysql的主键返回函数-->
-        </selectKey>
+            select LAST_INSERT_ID() &lt;!&ndash;mysql的主键返回函数&ndash;&gt;
+        </selectKey>-->
         insert into user(username,birthday,sex,address)
         values(#{username},#{birthday},#{sex},#{address})
     </insert>

@@ -15,6 +15,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -133,7 +134,7 @@ public class MybatisDemoTest {
     }
 
     /**
-     * 对象传递测试
+     * 对象参数传递测试
      * @throws Exception
      */
     @Test
@@ -266,9 +267,87 @@ public class MybatisDemoTest {
             UserMapper userMapper = session.getMapper(UserMapper.class);
             System.out.println("特定级联关系子查询不开启懒加载");
             List<User> users = userMapper.selectAllUserOrders();
-            System.out.println("特定级联关系子查询不开启懒加载");
+            System.out.println("特定级联关系子查询不开启懒加载"+users);
         }finally{
             session.close();
         }
     }
+
+    /**
+     * 批量插入 动态SQL
+     * @throws Exception
+     */
+    @Test
+    public void testBatchInsertOrdres() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        List<Order> orders = new ArrayList<Order>();
+        for (int i = 0;i<10;i++){
+            Order order = new Order();
+            order.setRemark("批量插入订单"+i);
+            order.setCreateTime(new Date());
+            order.setUpdateTime(new Date());
+            order.setUserId(15);
+            orders.add(order);
+        }
+        try{
+            OrderMapper orderMapper = session.getMapper(OrderMapper.class);
+            orderMapper.batchInsertOrdres(orders);
+
+            System.out.println(orders);
+            session.commit();
+        }finally{
+            session.close();
+        }
+    }
+
+    /**
+     * 测试一级缓存（session级别缓存 默认开启）
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSessionCache() throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        UserQueryVO queryVO = new UserQueryVO();
+        queryVO.setAddress("上海浦东");
+        queryVO.setSex("女");
+        try{
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            List<User> users1 = userMapper.queryUsersByCondition(queryVO);
+            System.out.println("第一次查询没有缓存："+users1);
+            //如果是执行两次service调用查询相同 的用户信息，是不走一级缓存的，因为mapper方法结束，
+            //sqlSession就关闭，一级缓存就清空。
+            List<User> users2 = userMapper.queryUsersByCondition(queryVO);
+            System.out.println("同一个session（session级别）里查询一级缓存："+users2);
+
+            User user = new User();
+            user.setUsername("王五");
+            user.setBirthday(new Date());
+            user.setAddress("上海浦东");
+            user.setSex("女");
+            userMapper.insertUser(user);
+            System.out.println("insert update delete 删除一级缓存数据");
+
+            List<User> users3 = userMapper.queryUsersByCondition(queryVO);
+            System.out.println("缓存重新加载："+users3);
+            newSessionCache(queryVO);
+            session.commit();
+        }finally{
+            session.close();
+        }
+    }
+
+    /**
+     * 不同的session的
+     * @param queryVO
+     * @throws Exception
+     */
+    private void newSessionCache(UserQueryVO queryVO) throws Exception{
+        SqlSession session = sqlSessionFactory.openSession();
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        List<User> users3 = userMapper.queryUsersByCondition(queryVO);
+        System.out.println("不同session（session级别）缓存不共享："+users3);
+    }
+
+
 }
