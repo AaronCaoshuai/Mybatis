@@ -1,11 +1,12 @@
 package com.aaron.mybatisdemo.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * 订单domain类
  */
-public class Order {
+public class Order implements Serializable {
     //主键
     private Integer id;
     //订单备注

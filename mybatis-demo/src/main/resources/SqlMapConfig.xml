@@ -32,6 +32,19 @@
         尽管一些数据库驱动不支持此特性，但仍可正常工作（如 Derby）
         默认为false-->
         <setting name="useGeneratedKeys" value="true"/>
+        <!--开启二级缓存,默认关闭
+            1. 第一次调用mapper下的SQL去查询用户信息。查询到的信息会存到该mapper对应的二级缓存区域内。
+            2. 第二次调用相同namespace下的mapper映射文件中相同的SQL去查询用户信息。会去对应的二级缓存内取结果。
+            3. 如果调用相同namespace下的mapper映射文件中的增删改SQL，并执行了commit操作。此时会清空该namespace下的二级缓存。
+            二级缓存缺点:控制力度不够细,多表联合查询会造成数据脏读问题,内置二级缓存是内存缓存,
+            解决方案:可以使用mybatis接口可以自定义缓存,多表查询可以在mapper中使用<cache-ref> 不同mapper引用同一个namespace缓存
+            不过，它会使缓存的使用效率变的很低！
+            任意的更新操作都会将共用的Cache清空，会频繁地清空Cache，
+            导致Cache实际的命中率和使用率就变得很低了，所以这种策略实际情况下是不可取的。
+            对于某些表执行了更新(update、delete、insert)操作后，如何去清空跟这些表有关联的查询语句所造成的缓存；
+            这样，就是以很细的粒度管理MyBatis内部的缓存，使得缓存的使用率和准确率都能大大地提升。
+        -->
+        <setting name="cacheEnabled" value="true"/>
     </settings>
     <!--Mybatis 默认支持java中的部分类型 以下是自定义别名-->
     <typeAliases>

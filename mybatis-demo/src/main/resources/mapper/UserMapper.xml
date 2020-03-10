@@ -3,6 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aaron.mybatisdemo.mapper.UserMapper">
+    <!--开启二级缓存-->
+    <cache/>
     <!--结果映射集 数据库列名和domain对象属性名映射,
     当数据库字段和实体类属性不一致时可以使用,或者使用数据库别名方式-->
     <resultMap id="userResult" type="user">
@@ -99,8 +101,17 @@
     <delete id="deleteUserById" parameterType="int">
         delete from user where id = #{id}
     </delete>
+
+    <!--刷新二级缓存
+        通过flushCache属性，可以控制select、insert、update、delete标签是否属性二级缓存**
+        默认设置
+    ​    默认情况下如果是select语句，那么flushCache是false。
+    ​    如果是insert、update、delete语句，那么flushCache是true。
+    ​    如果查询语句设置成true，那么每次查询都是去数据库查询，即意味着该查询的二级缓存失效。
+        如果增删改语句设置成false，即使用二级缓存，那么如果在数据库中修改了数据，而缓存数据还是原来的，这个时候就会出现脏读。
+        useCache标识是否使用二级缓存-->
     <!--传入参数是对象类型-->
-    <select id="queryUsersByCondition" parameterType="com.aaron.mybatisdemo.queryvo.UserQueryVO" resultType="user">
+    <select id="queryUsersByCondition" parameterType="com.aaron.mybatisdemo.queryvo.UserQueryVO" resultType="user" useCache="false">
         select
         <include refid="userColumn"/>
         from user where address = #{userQueryVO.address} and sex = #{userQueryVO.sex}

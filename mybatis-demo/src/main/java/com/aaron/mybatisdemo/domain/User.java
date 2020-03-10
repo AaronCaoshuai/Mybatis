@@ -1,13 +1,17 @@
 package com.aaron.mybatisdemo.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * 用户domain类
+ * 由于二级缓存的数据不一定都是存储到内存中，它的存储介质多种多样，比如说存储到文件系统中，所以需要给缓存的对象执行序列化。
+ *
+ *   如果该类存在父类，那么父类也要实现序列化。
  */
-public class User {
+public class User implements Serializable {
     //用户ID
     private Integer id;
     //姓名

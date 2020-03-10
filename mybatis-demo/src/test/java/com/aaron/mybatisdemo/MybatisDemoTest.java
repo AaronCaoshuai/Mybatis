@@ -350,4 +350,74 @@ public class MybatisDemoTest {
     }
 
 
+    /**
+     * 测试二级缓存（namespace级别缓存 默认开启）
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testMapperCache() throws Exception{
+        SqlSession session1 = sqlSessionFactory.openSession();
+        SqlSession session2 = sqlSessionFactory.openSession();
+        SqlSession session3 = sqlSessionFactory.openSession();
+        SqlSession session4 = sqlSessionFactory.openSession();
+        UserQueryVO queryVO = new UserQueryVO();
+        queryVO.setAddress("上海浦东");
+        queryVO.setSex("女");
+
+        UserMapper userMapper1 = session1.getMapper(UserMapper.class);
+        List<User> users1 = userMapper1.queryUsersByCondition(queryVO);
+        System.out.println("第一次查询没有命中二级缓存："+users1);
+        session1.close();
+        //如果是执行两次service调用查询相同 的用户信息，是不走一级缓存的，因为mapper方法结束，
+        //sqlSession就关闭，一级缓存就清空。
+        UserMapper userMapper2 = session2.getMapper(UserMapper.class);
+        List<User> users2 = userMapper2.queryUsersByCondition(queryVO);
+        System.out.println("第二次查询命中二级缓存"+users2);
+        session2.close();
+
+        UserMapper userMapper3 = session3.getMapper(UserMapper.class);
+        User user = new User();
+        user.setUsername("王五");
+        user.setBirthday(new Date());
+        user.setAddress("上海浦东");
+        user.setSex("女");
+        userMapper3.insertUser(user);
+        System.out.println("insert update delete 删除二级缓存数据");
+        session3.commit();
+
+        UserMapper userMapper4 = session4.getMapper(UserMapper.class);
+        List<User> users4 = userMapper4.queryUsersByCondition(queryVO);
+        System.out.println("二级缓存未命中："+users4);
+        session4.close();
+
+    }
+
+    /**
+     * 测试mapper指定语句不使用二级缓存（namespace级别缓存 默认开启）
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUserNotMapperCache() throws Exception{
+        SqlSession session1 = sqlSessionFactory.openSession();
+        SqlSession session2 = sqlSessionFactory.openSession();
+        UserQueryVO queryVO = new UserQueryVO();
+        queryVO.setAddress("上海浦东");
+        queryVO.setSex("女");
+
+        UserMapper userMapper1 = session1.getMapper(UserMapper.class);
+        List<User> users1 = userMapper1.queryUsersByCondition(queryVO);
+        System.out.println("第一次查询没有命中二级缓存,且没有加入二级缓存："+users1);
+        session1.close();
+        //如果是执行两次service调用查询相同 的用户信息，是不走一级缓存的，因为mapper方法结束，
+        //sqlSession就关闭，一级缓存就清空。
+        UserMapper userMapper2 = session2.getMapper(UserMapper.class);
+        List<User> users2 = userMapper2.queryUsersByCondition(queryVO);
+        System.out.println("第二次查询没有命中二级缓存"+users2);
+        session2.close();
+
+    }
+
+
 }
