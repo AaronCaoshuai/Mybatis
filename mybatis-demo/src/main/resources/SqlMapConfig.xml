@@ -58,14 +58,14 @@
         <environment id="dev">
             <!-- 事务管理器和事务作用域配置 -->
             <transactionManager type="JDBC"/>
-                <!-- 数据源配置 -->
-                <dataSource type="POOLED">
-                    <property name="driver" value="${driver}"/>
-                    <!--数据库连接中要指定编码格式-->
-                    <property name="url" value="${url}"/>
-                    <property name="username" value="${username}"/>
-                    <property name="password" value="${password}"/>
-                </dataSource>
+            <!-- 数据源配置 -->
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <!--数据库连接中要指定编码格式-->
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
         </environment>
     </environments>
     <!-- 映射文件配置加载 -->
@@ -74,6 +74,8 @@
         <mapper resource="mapper/UserDao.xml"/>
         <mapper resource="mapper/UserMapper.xml"/>
         <mapper resource="mapper/OrderMapper.xml"/>
+        <mapper resource="generatormapper/OrderDetailMapper.xml"/>
+        <mapper resource="generatormapper/OrderDetailMapperExt.xml"/>
         <mapper class="com.aaron.mybatisdemo.mapper.AnnotationUserMapper"/>
         <!--一下方法要求mapper接口名称和mapper映射文件名称相同，且放在同一个目录中.-->
         <!--<mapper url="绝对路径"/>-->

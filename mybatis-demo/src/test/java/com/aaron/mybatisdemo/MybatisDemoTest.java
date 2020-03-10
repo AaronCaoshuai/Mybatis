@@ -1,5 +1,7 @@
 package com.aaron.mybatisdemo;
 
+import com.aaron.generator.domain.OrderDetail;
+import com.aaron.generator.mapper.OrderDetailMapper;
 import com.aaron.mybatisdemo.dao.UserDao;
 import com.aaron.mybatisdemo.domain.Order;
 import com.aaron.mybatisdemo.domain.User;
@@ -419,5 +421,44 @@ public class MybatisDemoTest {
 
     }
 
+    @Test
+    public void testGeneratorMapper() {
+        SqlSession session = sqlSessionFactory.openSession();
+        OrderDetailMapper orderDetailMapper = session.getMapper(OrderDetailMapper.class);
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setCreateTime(new Date());
+        orderDetail.setUpdateTime(new Date());
+        orderDetail.setCreateUserId(1);
+        orderDetail.setUpdateUserId(1);
+        orderDetail.setVersion(1);
+        orderDetail.setOrderId(15);
+        orderDetail.setRemark("插入订单明细");
+        orderDetailMapper.insert(orderDetail);
+        System.out.println("insert :" + orderDetail);
+
+        orderDetail.setRemark("修改测试");
+        orderDetailMapper.updateByPrimaryKey(orderDetail);
+        System.out.println("update :" + orderDetail);
+
+        OrderDetail orderDetail1 = orderDetailMapper.selectByPrimaryKey(orderDetail.getId());
+        System.out.println("主键查询 :" + orderDetail1);
+
+        List<OrderDetail> orderDetails = orderDetailMapper.selectAll();
+        System.out.println("列表查询 :" + orderDetails);
+
+        orderDetailMapper.deleteByPrimaryKey(orderDetail.getId());
+
+        session.commit();
+        session.close();
+    }
+
+    @Test
+    public void testGeneratorMapperExt() {
+        SqlSession session = sqlSessionFactory.openSession();
+        OrderDetailMapper orderDetailMapper = session.getMapper(OrderDetailMapper.class);
+        List<OrderDetail> orderDetails = orderDetailMapper.selectAllExt();
+        System.out.println(orderDetails);
+        session.close();
+    }
 
 }

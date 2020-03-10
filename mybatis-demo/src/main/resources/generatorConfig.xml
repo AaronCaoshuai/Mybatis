@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!--根节点-->
+<generatorConfiguration>
+    <!--properties 引入外部文件 ${properties}
+        classPathEntry <classPathEntry location="E:\mysql\mysql-connector-java-5.1.29.jar"/>
+        context 至少配置一个可以配置多个-->
+    <properties resource="db.properties"/>
+    <!--
+     context
+    属性:id:唯一确定该标签
+        defaultModelType:如何生成实体类
+            conditional:，如果 个表的主键只有一个字段，那么不会为该字段生成单独的实体类，而是会将该字段合并到基本实体类中。
+            flat:：该模型只为每张表生成 个实体类。这个实体类包含表中的所有字段种模型最简单，推荐使用。
+            hierarchical如果表有主键，那么该模型会产生 个单独的主键实体类，
+            如果表还有 BLOB 字段，则会为表生成 个包含所有 BLOB 字段的单独的实体类，
+            然后为所有其他的字段另外生成 个单独的实体类。 MBG 会在所有生成的实体类之间维护 个继承关系。
+        targetRuntime:此属性用于指定生成的代码的运行时环境，支持以下可选值
+            MyBatis3 默认值。
+            MyBatis3Simple 这种情况不会生成与 Example 相关的方法
+        introspectedColumnimpl:该参数可以指定扩展 org.mybatis.mygenerator.api.
+            IntrospectedColumn 类的实现类。
+     -->
+    <context id="testTables" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+     <!--property (0 个或多个）
+        <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+            <property name="autoDelimitKeywords" value="true"/> 自动给关键字添加分隔符的属性
+            <property name="beginningDelimiter" value="`"/>配置前置分隔符的属性
+            <property name="endingDelimiter" value="`"/>配置后置分隔符的属性
+        </context>
+        javaFileEncoding java文件编码 utf-8 默认使用当前运行环境的编码
+        javaFormatter 不常用
+        xmlFormatter  不常用-->
+        <!--自动给关键字添加分隔符的属性-->
+        <property name="autoDelimitKeywords" value="true"/>
+        <!--配置前置分隔符的属性-->
+        <property name="beginningDelimiter" value="`"/>
+        <!--配置后置分隔符的属性-->
+        <property name="endingDelimiter" value="`"/>
+        <!--plugin (0 个或多个）插件的标签 如:缓存插件,序列化插件,RowBound插件,ToString插件-->
+        <!--使用序列化插件-->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!--自定义Lombok插件-->
+        <plugin type="com.aaron.generator.LombokPlugin"/>
+        <!--commentGenerator (0个或1个〉:如何生成注释信息个可选属性type,
+            可以指定用户的实现类,该类需要实现org.mybatis.mygenerator.api.CommentGenerator接口,
+            而且必有一个默认空的构造方法。type属性收默认的特殊值DEFAULT,
+            使用默认的实现类 org.mybatis.mygenerator internal.DefaultCommentGenerator
+            suppressAllComments:阻止生成注释 默认为false
+            supperssDate:阻止生成的注释包含时间戳 默认为false
+            addRemarkComments:注释是否添加数据库表的备注信息 默认为false
+            对于注释不满意可以定制实现类,然后生成自己的注释.
+            MBG是通过JDBC的DatabaseMetaData 方式来获取数据库表和字段的备注信息的，
+            大多数的 JDBC 驱动并不支持，常用数据库中 MySQL 支持，
+            SQLSever 不支持
+            Oracle特殊配置后可以支持，配置方式见下一节关于 jdbcConnection 标签的介绍-->
+        <!--如何生成注释信息-->
+        <commentGenerator type="com.aaron.generator.MyCommentGenerator">
+            <!--禁止在注释中生成日期-->
+            <property name="suppressDate" value="true" />
+            <!--生成数据库的注释-->
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+        <!--jdbcConnection (1个）指定MBG要连接的数据库信息.
+            必选,只能有一个
+            配置该标签需要注意，如果JDBC驱动不在 classpath 下，
+            就要通过 classPathEntry标签引入jar包，这里推荐将jar放到classpath下，
+            或者参考前面 classPathEntry 配置 JDBC驱动的方法。
+            必选属性:
+            driverClass:访问数据库的jdbc驱动程序的完全限定类名
+            connectionURL:访问数据库的jdbc连接url
+            可选属性:
+            userId:访问数据库的用户id
+            password:访问数据库的密码
+            可以接受多个property字标签,配置的property属性都会添加到jdbc驱动属性中
+            (使用property标签的name属性反射赋值)
+
+            <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
+                            connection URL="jdbc:oracle:thin:@//localhost:l521/orcl"
+                            userId="root"
+                            password="root">
+                配置了oracle的remarksReporting属性,是的jdbc方式可以获取注释信息
+                <property name="remarksReporting" value="true"/>
+            </jdbcConnection>-->
+        <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
+        <jdbcConnection driverClass="${driver}" connectionURL="${url}"
+                        userId="${username}" password="${password}"/>
+        <!-- <jdbcConnection driverClass="oracle.jdbc.OracleDriver" connectionURL="jdbc:oracle:thin:@127.0.0.1:1521:yycg"
+            userId="yycg" password="yycg"> </jdbcConnection> -->
+
+        <!--javaTypeResolver (0个或1个)
+        该标签的配置用来指定 JDBC 类型和 Java 类型如何转换
+        一般使用默认就可以了,特殊可以使用type类型指定自定义实现类来处理
+        该属性还有1个可以配置的 property 标签，可以配置的属性为 forceBigDecimals,
+        该属性可以控制是否强制将 DECIMAL NUMERIC 类型的 JDBC 字段转换为 Java 类型的
+        java.math BigDecimal ，默认值为 false ，一般不需要配置-->
+        <!-- 默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer，为 true时把JDBC DECIMAL
+            和 NUMERIC 类型解析为java.math.BigDecimal -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+      <!--  javaModelGenerator (1个）
+        控制生成的实体类
+        属性:
+        targetPackage:生成实体类包
+        targetProject:项目目标路径 相对,或者绝对路径
+        子属性:
+        constructorBased:只对mybatis3有效,true,就会使用构造方法入参,false使用setter方式,默认为false
+        enableSubPackages:如果为true,MBG会根据catalog和schema来生成子包
+        如果为false就会直接使用targetPackage属性。默认为false
+        immutable:用来配置实体类属性是否可变如果设置为true,那么constructorBased不管设置成什么，
+        都会使用构造方法入参,并且不会生成setter方法,如果为false,实体类属性就可以改变。默认为false
+        rootClass:设置所有实体类的基类,如果设置,需要使用类的全限定名称.如果MBG能够加载rootClass
+        (可以通过 classPathEntry引入jar包,或者classpath方式）那么MBG不会覆盖和父类中完全匹配的属性。
+        匹配规则如下
+        属性名完全相同
+        属性类型相同
+        属性有 getter 方法
+        属性有 setter 方法
+        trimStrings:判断是否对数据库查询结果进行trim操作,默认为false,如果设置为true,就会生成如下代码
+        public void setUsername(String username) {
+        this.username = username ==null? null : username.trim() ;
+        }-->
+        <!-- targetProject:生成PO类的位置 -->
+        <javaModelGenerator targetPackage="com.aaron.generator.domain"
+                            targetProject="mybatis-demo/src/main/java">
+            <!-- enableSubPackages:是否让schema作为包的后缀 默认false-->
+            <!--<property name="enableSubPackages" value="false" />-->
+            <!-- 从数据库返回的值被清理前后的空格 -->
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+       <!-- sqlMapGenerator (0个或1个）
+        配置SQL映射生成器的属性
+        如果targetRuntime设置为MyBatis3,则只有当javaClientGenerator配置需要XML时,该标签才必须配置
+        如果没有配置javaClientGenerator,则使用以下规则
+        如果指定了一个sqlMapGenerator,那MBG将只生成SQL映射文件和实体类。
+        如果没有指定sqlMapGenerator,那么MBG将只生成实体类
+        属性:
+        targetPackage:SQL映射文件包.
+        targetProject:项目目标路径,相对路径,或者绝对路径
+        enableSubPackages:如果为true,MBG会根据catalog和schema来生成子包
+        如果为false就会直接使用targetPackage属性。默认为false
+        -->
+        <!-- targetProject:mapper映射文件生成的位置 -->
+        <sqlMapGenerator targetPackage="generatormapper"
+                         targetProject="mybatis-demo/src/main/resources">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="false" />
+        </sqlMapGenerator>
+        <!--javaClientGenerator (0个或1个）
+        配置java客户端生成器(Mapper接口)的属性,不配置,则不生成Mapper接口
+        type:接口生成器,可以自定义,需要继承org.mybatis.mygenerator.codegen.AbstractJavaClientGenerator类,
+        必须有一个默认空的构造方法.
+        预设的代码生成器,根据context的targetRuntime分成两类
+        Mybatis:
+        ANNOTATEDMAPPER:基于注解的Mapper接口,不会有对应xml文件
+        MIXEDMAPPER:xml和注解的混合形式
+        XMLMAPPER:所有方法都在xml中,接口调用依赖xml文件
+        Mybatis3Simple:
+        ANNOTATEDMAPPER:注解的Mapper接口,不会有对应的xml文件
+        XMLMAPPER:所有的方法都在XML中,接口调用依赖xml文件
+        targetPackage:Mapper接口包
+        targetProject:项目路径
+        implementationPackage:如果指定了该属性,Mapper 接口的实现类就会生成在这个属性指定的包中。-->
+        <!-- targetPackage：mapper接口生成的位置 -->
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="com.aaron.generator.mapper"
+                             targetProject="mybatis-demo/src/main/java">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="false" />
+        </javaClientGenerator>
+        <!--table(1个或多个）
+        必选属性:
+        tableName:表名,指定要生成的表名,使用SQL通配符匹配多个表 <table tableName="%">
+        可选属性:
+        schema:数据库的schema,可以使用SQL通配符匹配设置了改值,生成SQL表名为schema.tableName
+        catalog:数据库的catalog,如果设置了该值,表名变为catalog.tableName
+        alias:如果指定,这个值会用在生成的select查询SQL表的别名和列名上,丽日alias_actualColumnName
+        domainObjectName:生成对象的基础名称.如果没有指定,会自动根据表名来生成名称
+        useActualColumnNames:如果设置为true，那么MBG会使用从数据库元数据获取的列名作为生成的实体对象的属性。
+        如果为 false （默认值为 false),MGB将会尝试将返回的名称转换为驼峰形式
+        其他的可选属性可以有需要在查看文档使用-->
+        <!-- 指定数据库表 -->
+        <table tableName="t_order_detail" domainObjectName="OrderDetail">
+            <!--插入数据主键返回 identity-->
+            <generatedKey column="id" sqlStatement="MySql" type="post" identity="true"/>
+        </table>
+    </context>
+</generatorConfiguration>
