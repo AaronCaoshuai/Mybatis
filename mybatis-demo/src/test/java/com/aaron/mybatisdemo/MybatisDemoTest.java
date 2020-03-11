@@ -17,6 +17,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,8 +29,6 @@ public class MybatisDemoTest {
 
     private SqlSessionFactory sqlSessionFactory;
 
-    private UserDao userDao;
-
 
     /**
      * 初始化sqlSessionFactory
@@ -39,8 +38,9 @@ public class MybatisDemoTest {
     public void init() throws Exception{
         //SqlSessionFactory的构建器 Resources 类
         SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
-        sqlSessionFactory = sqlSessionFactoryBuilder.build(Resources.getResourceAsStream("SqlMapConfig.xml"));
-        userDao = new UserDaoImpl(sqlSessionFactory);
+        InputStream resource = Resources.getResourceAsStream("mybatis-config.xml");
+        sqlSessionFactory = sqlSessionFactoryBuilder.build(resource);
+
     }
 
     /**
@@ -49,6 +49,7 @@ public class MybatisDemoTest {
      */
     @Test
     public void testFindUserById() throws Exception{
+        UserDao userDao = new UserDaoImpl(sqlSessionFactory);
         User user = userDao.findUserById(1);
         System.out.println(user);
         User user2 = userDao.findUserById(3);
@@ -61,6 +62,7 @@ public class MybatisDemoTest {
      */
     @Test
     public void testFindUserByName() throws Exception{
+        UserDao userDao = new UserDaoImpl(sqlSessionFactory);
         List<User> users = userDao.findUserByName("李");
         System.out.println(users);
     }
@@ -71,6 +73,7 @@ public class MybatisDemoTest {
      */
     @Test
     public void testInsertUser() throws Exception{
+        UserDao userDao = new UserDaoImpl(sqlSessionFactory);
         User user = new User();
         user.setUsername("王五");
         user.setBirthday(new Date());
