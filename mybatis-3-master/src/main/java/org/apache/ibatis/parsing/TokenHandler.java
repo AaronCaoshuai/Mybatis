@@ -17,6 +17,7 @@ package org.apache.ibatis.parsing;
 
 /**
  * @author Clinton Begin
+ * TokenHandler接口的实现会按照一定的逻辑解析占位符
  */
 public interface TokenHandler {
   String handleToken(String content);
