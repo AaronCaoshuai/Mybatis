@@ -1,4 +1,4 @@
-# java
+# Mybatis
 ## Mybatis相关总结--Mybatis总结.md
 ### Mybatis基础操作和使用插件来生成模板代码
     1.Mybatis基本操作
