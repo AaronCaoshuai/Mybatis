@@ -28,14 +28,16 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * @author Clinton Begin
+ * 继承了BaseWrapper
  */
 public class BeanWrapper extends BaseWrapper {
-
+  //javaBean对象
   private final Object object;
+  //该javaBean对应的MetaObject对象的MetaClass对象
   private final MetaClass metaClass;
 
   public BeanWrapper(MetaObject metaObject, Object object) {
-    super(metaObject);
+    super(metaObject);//继承下来的MetaObject类
     this.object = object;
     this.metaClass = MetaClass.forClass(object.getClass(), metaObject.getReflectorFactory());
   }

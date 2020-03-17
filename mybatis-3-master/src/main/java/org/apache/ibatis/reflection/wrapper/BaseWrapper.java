@@ -24,12 +24,14 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * @author Clinton Begin
+ * 实现了ObjectWrapper
  */
 public abstract class BaseWrapper implements ObjectWrapper {
 
   protected static final Object[] NO_ARGUMENTS = new Object[0];
+  //MetaObject
   protected final MetaObject metaObject;
-
+  //构造器
   protected BaseWrapper(MetaObject metaObject) {
     this.metaObject = metaObject;
   }
@@ -43,9 +45,9 @@ public abstract class BaseWrapper implements ObjectWrapper {
   }
 
   protected Object getCollectionValue(PropertyTokenizer prop, Object collection) {
-    if (collection instanceof Map) {
+    if (collection instanceof Map) {//如果是Map类型,则index为key
       return ((Map) collection).get(prop.getIndex());
-    } else {
+    } else {//如果是其他集合类型,则Index为下标
       int i = Integer.parseInt(prop.getIndex());
       if (collection instanceof List) {
         return ((List) collection).get(i);

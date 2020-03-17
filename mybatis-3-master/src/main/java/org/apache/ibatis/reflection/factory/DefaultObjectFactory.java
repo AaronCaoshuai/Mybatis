@@ -33,6 +33,9 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * 唯一默认的对象工厂实现类 反射工厂
+ * 除了使用Mybatis提供的DefaultObjectFactory实现,我们还可以在mybatis-cofnig.xml
+ * 配置文件中指定自定义的ObjectFactory接口实现类,从而实现功能上的扩展
  */
 public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
@@ -59,6 +62,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
   private  <T> T instantiateClass(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
     try {
       Constructor<T> constructor;
+      //通过无参构造函数创建对象
       if (constructorArgTypes == null || constructorArgs == null) {
         constructor = type.getDeclaredConstructor();
         try {
@@ -72,6 +76,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
           }
         }
       }
+      //根据指定的参数列表查找构造器 并实例化对象
       constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[constructorArgTypes.size()]));
       try {
         return constructor.newInstance(constructorArgs.toArray(new Object[constructorArgs.size()]));
@@ -84,6 +89,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
         }
       }
     } catch (Exception e) {
+      //异常处理
       StringBuilder argTypes = new StringBuilder();
       if (constructorArgTypes != null && !constructorArgTypes.isEmpty()) {
         for (Class<?> argType : constructorArgTypes) {

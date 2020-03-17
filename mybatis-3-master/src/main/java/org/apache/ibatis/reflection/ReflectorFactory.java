@@ -12,14 +12,16 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
+ *    ReflectorFactory 接口主要实现了对Reflector对象的创建和缓存
  */
 package org.apache.ibatis.reflection;
 
 public interface ReflectorFactory {
 
-  boolean isClassCacheEnabled();
+  boolean isClassCacheEnabled();//检测该ReflectorFactory对象是否会缓存Reflector对象
 
-  void setClassCacheEnabled(boolean classCacheEnabled);
+  void setClassCacheEnabled(boolean classCacheEnabled);//设置是否缓存Reflector对象
 
-  Reflector findForClass(Class<?> type);
+  Reflector findForClass(Class<?> type);//创建指定Class对应的Reflector对象
 }

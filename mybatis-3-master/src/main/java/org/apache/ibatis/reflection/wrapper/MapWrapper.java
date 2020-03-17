@@ -26,6 +26,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * @author Clinton Begin
+ * 封装了Map<String,Object>类型对象
  */
 public class MapWrapper extends BaseWrapper {
 

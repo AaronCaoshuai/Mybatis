@@ -20,6 +20,11 @@ import org.apache.ibatis.reflection.ReflectionException;
 
 /**
  * @author Clinton Begin
+ * 默认的ObjectWrapperFactory工厂实现
+ * 实际上是不可用的
+ * hasWrapperFor() 默认返回false
+ * getWrapperFor() 默认抛出异常
+ * 可以在mybatis-config.xml中配置自定义的ObjectWrapperFactory实现类进行扩展
  */
 public class DefaultObjectWrapperFactory implements ObjectWrapperFactory {
 

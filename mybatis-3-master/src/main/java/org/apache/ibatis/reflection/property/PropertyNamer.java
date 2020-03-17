@@ -21,13 +21,14 @@ import org.apache.ibatis.reflection.ReflectionException;
 
 /**
  * @author Clinton Begin
+ * 完成方法名到属性名的转换以及多种检测操作
  */
 public final class PropertyNamer {
 
   private PropertyNamer() {
     // Prevent Instantiation of Static Class
   }
-
+  //方法会将方法名转换成属性名
   public static String methodToProperty(String name) {
     if (name.startsWith("is")) {
       name = name.substring(2);
@@ -43,15 +44,15 @@ public final class PropertyNamer {
 
     return name;
   }
-
+  //检测方法名是否对应属性名
   public static boolean isProperty(String name) {
     return name.startsWith("get") || name.startsWith("set") || name.startsWith("is");
   }
-
+  //检测方法是否为getter方法
   public static boolean isGetter(String name) {
     return name.startsWith("get") || name.startsWith("is");
   }
-
+  //检测方法是否为setter方法
   public static boolean isSetter(String name) {
     return name.startsWith("set");
   }

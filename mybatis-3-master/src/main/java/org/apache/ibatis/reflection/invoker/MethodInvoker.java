@@ -22,6 +22,8 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * 通过method字段封装了对应方法的Method对象
+ * invoke()方法通过调用Method.invoke()方法实现
  */
 public class MethodInvoker implements Invoker {
 

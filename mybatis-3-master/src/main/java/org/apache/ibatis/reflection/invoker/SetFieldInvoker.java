@@ -21,6 +21,7 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * 通过field字段封装了对应的Field对象
  */
 public class SetFieldInvoker implements Invoker {
   private final Field field;
