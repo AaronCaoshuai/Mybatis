@@ -1,33 +1,75 @@
 package com.aaron.reflect;
 
-import java.io.Serializable;
+/**
+ * 人类
+ */
+public class Person {
+    //姓名
+    private String username;
+    //年龄
+    private String age;
+    //地址
+    private String address;
 
-@SuppressWarnings("all")
-public class Person implements Serializable {
-    public String username;
-    private String password;
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     public Person() {
     }
 
-    private int age;
-
-    public Person(String username, String password,int age) {
+    public Person(String username, String age, String address) {
         this.username = username;
-        this.password = password;
         this.age = age;
+        this.address = address;
     }
 
-    private Person( String password,int age) {
-        this.password = password;
-        this.age = age;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Person person = (Person) o;
+
+        if (username != null ? !username.equals(person.username) : person.username != null) return false;
+        if (age != null ? !age.equals(person.age) : person.age != null) return false;
+        return address != null ? address.equals(person.address) : person.address == null;
     }
 
-    private void action(){
-        System.out.println("action");
+    @Override
+    public int hashCode() {
+        int result = username != null ? username.hashCode() : 0;
+        result = 31 * result + (age != null ? age.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        return result;
     }
 
-    public void run(){
-        System.out.println("run");
+    @Override
+    public String toString() {
+        return "Person{" +
+                "username='" + username + '\'' +
+                ", age='" + age + '\'' +
+                ", address='" + address + '\'' +
+                '}';
     }
 }
