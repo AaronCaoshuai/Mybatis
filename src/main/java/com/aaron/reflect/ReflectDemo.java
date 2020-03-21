@@ -67,6 +67,17 @@ public class ReflectDemo {
         System.out.println(studentClazz.getPackage());//package com.aaron.reflect
         System.out.println("==================================");
 
+        //isAnonymousClass() 查看是否是匿名内部类
+        System.out.println(studentClass.isAnonymousClass());//false
+
+        //isInterface()是否是接口
+        System.out.println(studentClass.isInterface());//false
+
+        //isMemberClass() 是否是抽象类
+        System.out.println(studentClass.isMemberClass());//false
+        System.out.println("==================================");
+
+
         //注解相关 已经获取类对象上的注解
         System.out.println(studentClazz.isAnnotation());//false 是否是一个注解类
         System.out.println(studentClazz.isAnnotationPresent(SuppressWarnings.class));//true Deprecated 的注解是否在该类上
