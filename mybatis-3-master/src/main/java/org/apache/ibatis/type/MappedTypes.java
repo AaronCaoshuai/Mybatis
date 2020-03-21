@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author Eduardo Macarron
+ * 用于指明该TypeHandler实现类能够处理的java类型的集合
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

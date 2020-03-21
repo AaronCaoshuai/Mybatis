@@ -34,11 +34,14 @@ import org.apache.ibatis.io.Resources;
 
 /**
  * @author Clinton Begin
+ * 类别名的注册和管理
  */
 public class TypeAliasRegistry {
-
+  //通过TYPE_ALIASES 字段管理别名与Java类型之间的对应关系
   private final Map<String, Class<?>> TYPE_ALIASES = new HashMap<>();
-
+  //构造器 默认为java的基本类型及其数组类型,基本类型的包装类及其数组类型
+  //Date BigDecimal BigInteger Map HashMap List ArrayList Collection Iterator ResultSet
+  //等类型添加了别名
   public TypeAliasRegistry() {
     registerAlias("string", String.class);
 
@@ -120,42 +123,51 @@ public class TypeAliasRegistry {
       throw new TypeException("Could not resolve type alias '" + string + "'.  Cause: " + e, e);
     }
   }
-
+  //扫描指定包下的类
   public void registerAliases(String packageName){
     registerAliases(packageName, Object.class);
   }
-
+  //重载
   public void registerAliases(String packageName, Class<?> superType){
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
+    //解析工具 查找指定包下的superType类型
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
     Set<Class<? extends Class<?>>> typeSet = resolverUtil.getClasses();
     for(Class<?> type : typeSet){
       // Ignore inner classes and interfaces (including package-info.java)
       // Skip also inner classes. See issue #6
+      //过滤掉内部类,接口以及抽象类
       if (!type.isAnonymousClass() && !type.isInterface() && !type.isMemberClass()) {
+        //注册北冥
         registerAlias(type);
       }
     }
   }
-
+  //registerAlias 重载中会尝试读取@Alias注解
   public void registerAlias(Class<?> type) {
-    String alias = type.getSimpleName();
+    String alias = type.getSimpleName();//类的简单名称
+    //读取@Alias注解
     Alias aliasAnnotation = type.getAnnotation(Alias.class);
     if (aliasAnnotation != null) {
       alias = aliasAnnotation.value();
-    } 
+    }
+    //检测此别名不存在后,会将其记录到TYPE_ALIASES集合中
     registerAlias(alias, type);
   }
-
+  //完成别名的注册
   public void registerAlias(String alias, Class<?> value) {
+    //检测alias是否为空
     if (alias == null) {
       throw new TypeException("The parameter alias cannot be null");
     }
     // issue #748
+    //小写转换
     String key = alias.toLowerCase(Locale.ENGLISH);
+    //检测别名是否已经存在
     if (TYPE_ALIASES.containsKey(key) && TYPE_ALIASES.get(key) != null && !TYPE_ALIASES.get(key).equals(value)) {
       throw new TypeException("The alias '" + alias + "' is already mapped to the value '" + TYPE_ALIASES.get(key).getName() + "'.");
     }
+    //注册别名
     TYPE_ALIASES.put(key, value);
   }
 

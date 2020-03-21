@@ -21,6 +21,8 @@ import java.util.Map;
 
 /**
  * @author Clinton Begin
+ * 记录jdbc类型在java.sql.Types中相应的常量编码
+ * 静态集合 codeLookup维护常量编码与jdbcType之间的对应关系
  */
 public enum JdbcType {
   /*

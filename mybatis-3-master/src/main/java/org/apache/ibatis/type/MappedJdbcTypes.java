@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author Eduardo Macarron
+ * 用来记录可以指定的JDBC类型
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

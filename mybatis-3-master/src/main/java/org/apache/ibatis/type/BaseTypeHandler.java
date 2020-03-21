@@ -35,6 +35,7 @@ import org.apache.ibatis.session.Configuration;
  * @author Clinton Begin
  * @author Simone Tripodi
  * @author Kzuki Shimizu
+ * TypeHandler抽象类
  */
 public abstract class BaseTypeHandler<T> extends TypeReference<T> implements TypeHandler<T> {
 
@@ -56,6 +57,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 		this.configuration = c;
 	}
 
+	//非空数据的处理交给了子类
 	@Override
 	public void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
 		if (parameter == null) {
@@ -64,6 +66,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 						"JDBC requires that the JdbcType must be specified for all nullable parameters.");
 			}
 			try {
+				//设置空值null
 				ps.setNull(i, jdbcType.TYPE_CODE);
 			} catch (SQLException e) {
 				throw new TypeException("Error setting null for parameter #" + i + " with JdbcType " + jdbcType + " . "
@@ -72,7 +75,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 			}
 		} else {
 			try {
-				// 通过PreparedStatement的API去设置非空参数
+				//通过PreparedStatement的API去设置非空参数 交给子类实现来处理
 				setNonNullParameter(ps, i, parameter, jdbcType);
 			} catch (Exception e) {
 				throw new TypeException("Error setting non null for parameter #" + i + " with JdbcType " + jdbcType
@@ -86,7 +89,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 	@Override
 	public T getResult(ResultSet rs, String columnName) throws SQLException {
 		try {
-			return getNullableResult(rs, columnName);
+			return getNullableResult(rs, columnName);//抽象方法 子类实现
 		} catch (Exception e) {
 			throw new ResultMapException(
 					"Error attempting to get column '" + columnName + "' from result set.  Cause: " + e, e);

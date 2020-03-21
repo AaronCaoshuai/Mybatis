@@ -22,11 +22,15 @@ import java.sql.SQLException;
 
 /**
  * @author Clinton Begin
+ * 类型转换器 顶层接口
+ * 一般情况下 TypeHandler用于完成单个参数以及单个列值的类型转换,如果存在多列值转换成一个java对象
+ * 应该优先考虑使用在映射文件中定义合适的映射规则<resultMap/>完成映射
  */
 public interface TypeHandler<T> {
-
+  //在通过PreparedStatement为SQL语句绑定参数时,会将数据有java类型转换成JdbcType类型
   void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
-
+  //从ResultSet中获取数据时会调用此方法,会将数据有JdbcType类型转换成java类型
+  //getResult 方法重载
   T getResult(ResultSet rs, String columnName) throws SQLException;
 
   T getResult(ResultSet rs, int columnIndex) throws SQLException;
