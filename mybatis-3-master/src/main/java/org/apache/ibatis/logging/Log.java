@@ -17,6 +17,7 @@ package org.apache.ibatis.logging;
 
 /**
  * @author Clinton Begin
+ *  定义了日志模块的功能
  */
 public interface Log {
 
