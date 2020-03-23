@@ -34,18 +34,26 @@ import org.apache.ibatis.reflection.ArrayUtil;
  * 
  * @author Clinton Begin
  * @author Eduardo Macarron
+ * 通过JDK动态代理的方式,将JDBC操作通过指定的日志框架打印出来
+ * 通常在开发阶段能使用,可以输出SQL语句,用户传入的绑定参数,SQL语句影响的行数等等信息.
+ * jdbc日志抽象类
+ * 子类实现包括ConnectionLogger,PreparedStatementLogger,ResultSetLogger,StatementLogger
+ *
  */
 public abstract class BaseJdbcLogger {
-
+  //记录了PreparedStatement接口中定义的常用的set*()方法
   protected static final Set<String> SET_METHODS = new HashSet<>();
+  //记录了Statement接口和PreparedStatement接口中与执行SQL语句相关的方法
   protected static final Set<String> EXECUTE_METHODS = new HashSet<>();
-
+  //记录了PreparedStatement.set*()方法设置的键值对
   private final Map<Object, Object> columnMap = new HashMap<>();
-
+  //记录了PreparedStatement.set*()方法设置的key值
   private final List<Object> columnNames = new ArrayList<>();
+  //记录了PreparedStatement.set*(()方法知识的value值
   private final List<Object> columnValues = new ArrayList<>();
-
+  //用于输出日志的Log对象
   protected Log statementLog;
+  //记录了SQL的层数,用于格式化输出SQL
   protected int queryStack;
 
   /*

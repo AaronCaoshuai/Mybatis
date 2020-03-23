@@ -30,10 +30,11 @@ import org.apache.ibatis.reflection.ExceptionUtil;
  * 
  * @author Clinton Begin
  * @author Eduardo Macarron
- * 
+ * ConnectionLogger 继承了BaseJdbcLogger 并且实现了InvocationHandler
+ * 其中封装了Connection对象
  */
 public final class ConnectionLogger extends BaseJdbcLogger implements InvocationHandler {
-
+  //封装了Connection对象
   private final Connection connection;
 
   private ConnectionLogger(Connection conn, Log statementLog, int queryStack) {
@@ -45,14 +46,19 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
   public Object invoke(Object proxy, Method method, Object[] params)
       throws Throwable {
     try {
+      //如果调用的方法是从Object继承的方法,则直接调用,不做任何处理
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, params);
-      }    
+      }
+      //如果调用的是prepareStatement()方法prepareCall()方法createStatement()方法
+      //则在创建相应Statement对象后,为其创建代理对象并返回该代理对象
       if ("prepareStatement".equals(method.getName())) {
-        if (isDebugEnabled()) {
+        if (isDebugEnabled()) {//日志打印
           debug(" Preparing: " + removeBreakingWhitespace((String) params[0]), true);
-        }        
+        }
+        //调用底层封装的Connection对象的preparedStatement()方法,得到PreparedStatement对象
         PreparedStatement stmt = (PreparedStatement) method.invoke(connection, params);
+        //为该PreparedStatement对象创建代理对象
         stmt = PreparedStatementLogger.newInstance(stmt, statementLog, queryStack);
         return stmt;
       } else if ("prepareCall".equals(method.getName())) {
@@ -79,6 +85,7 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
    *
    * @param conn - the original connection
    * @return - the connection with logging
+   * 使用jdk动态代理创建代理对象
    */
   public static Connection newInstance(Connection conn, Log statementLog, int queryStack) {
     InvocationHandler handler = new ConnectionLogger(conn, statementLog, queryStack);
