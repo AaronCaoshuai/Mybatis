@@ -28,6 +28,7 @@ import org.apache.ibatis.datasource.DataSourceFactory;
 
 /**
  * @author Clinton Begin
+ * 具体工厂类
  */
 public class JndiDataSourceFactory implements DataSourceFactory {
 

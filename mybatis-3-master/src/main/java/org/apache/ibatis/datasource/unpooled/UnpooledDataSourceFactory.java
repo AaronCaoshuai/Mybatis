@@ -26,6 +26,7 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 
 /**
  * @author Clinton Begin
+ * 具体工厂类
  */
 public class UnpooledDataSourceFactory implements DataSourceFactory {
 
@@ -35,27 +36,33 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
   protected DataSource dataSource;
 
   public UnpooledDataSourceFactory() {
+    //实例化DataSource
     this.dataSource = new UnpooledDataSource();
   }
 
   @Override
   public void setProperties(Properties properties) {
     Properties driverProperties = new Properties();
+    //创建DataSource相应MetaObject
     MetaObject metaDataSource = SystemMetaObject.forObject(dataSource);
+    //遍历properties 该集合中配置了数据源需要的信息
     for (Object key : properties.keySet()) {
       String propertyName = (String) key;
       if (propertyName.startsWith(DRIVER_PROPERTY_PREFIX)) {
+        //以"driver."开头的配置项是对DataSource的配置,记录到driverProperties中保存
         String value = properties.getProperty(propertyName);
         driverProperties.setProperty(propertyName.substring(DRIVER_PROPERTY_PREFIX_LENGTH), value);
-      } else if (metaDataSource.hasSetter(propertyName)) {
+      } else if (metaDataSource.hasSetter(propertyName)) {//是否有该属性的setter方法
         String value = (String) properties.get(propertyName);
+        //根据属性类型进行类型转换
         Object convertedValue = convertValue(metaDataSource, propertyName, value);
+        //设置DataSource的相关属性
         metaDataSource.setValue(propertyName, convertedValue);
       } else {
         throw new DataSourceException("Unknown DataSource property: " + propertyName);
       }
     }
-    if (driverProperties.size() > 0) {
+    if (driverProperties.size() > 0) {//设置DataSource.driverProperties属性值
       metaDataSource.setValue("driverProperties", driverProperties);
     }
   }

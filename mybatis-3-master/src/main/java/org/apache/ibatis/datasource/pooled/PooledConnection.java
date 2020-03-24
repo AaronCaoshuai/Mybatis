@@ -25,20 +25,33 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
  * @author Clinton Begin
+ * 封装了真正的数据库连接对象Connection
+ * 以及其代理对象,使用JDK动态代理
  */
 class PooledConnection implements InvocationHandler {
-
+  //关闭方法
   private static final String CLOSE = "close";
   private static final Class<?>[] IFACES = new Class<?>[] { Connection.class };
-
+  //Connection对象的hashCode值
   private final int hashCode;
+  //记录当前PooledConnection对象所在的PooledDataSource对象
+  //该PooledConnection是从该PooledDataSource中获取的
+  //当调用close()方法时会将PooledConnection放回该PooledDataSource中
   private final PooledDataSource dataSource;
+  //真正的数据库连接
   private final Connection realConnection;
+  //数据库连接的代理对象
   private final Connection proxyConnection;
+  //从连接池中取出该连接的时间戳
   private long checkoutTimestamp;
+  //该连接创建的时间戳
   private long createdTimestamp;
+  //最后一次被使用的时间戳
   private long lastUsedTimestamp;
+  //由数据库URL,用户名和密码计算出来的hash值,可用于表示该连接所在的连接池
   private int connectionTypeCode;
+  //检测当前PooledConnection是否有效,主要是为了防止程序通过close()方法将连接归还给连接池之后
+  //依然通过该连接操作数据库
   private boolean valid;
 
   /**
@@ -228,21 +241,25 @@ class PooledConnection implements InvocationHandler {
    * @param method - the method to be executed
    * @param args   - the parameters to be passed to the method
    * @see java.lang.reflect.InvocationHandler#invoke(Object, java.lang.reflect.Method, Object[])
+   * 代理的具体实现
    */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     String methodName = method.getName();
+    //判断是否关闭方法
     if (CLOSE.hashCode() == methodName.hashCode() && CLOSE.equals(methodName)) {
+      //将其重新放入到连接池,而不是真正关闭数据库连接
       dataSource.pushConnection(this);
       return null;
     }
     try {
+      //不是Object类的方法则检测连接是否有效
       if (!Object.class.equals(method.getDeclaringClass())) {
         // issue #579 toString() should never fail
         // throw an SQLException instead of a Runtime
-        checkConnection();
+        checkConnection();//检测连接是否有效
       }
-      return method.invoke(realConnection, args);
+      return method.invoke(realConnection, args);//调用真正的数据库连接对象的对应方法
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);
     }

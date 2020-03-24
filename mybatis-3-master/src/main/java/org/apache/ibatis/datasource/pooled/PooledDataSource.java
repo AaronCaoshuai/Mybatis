@@ -35,25 +35,36 @@ import org.apache.ibatis.logging.LogFactory;
  * This is a simple, synchronous, thread-safe database connection pool.
  *
  * @author Clinton Begin
+ * PooledDataSource 具体的产品实现类
  */
 public class PooledDataSource implements DataSource {
 
   private static final Log log = LogFactory.getLog(PooledDataSource.class);
-
+  //通过PoolState管理连接池的状态并记录统计信息
   private final PoolState state = new PoolState(this);
-
+  //记录UnpooledDataSource对象,用于生成真实的数据库连接对象,构造函数中会初始化该字段
   private final UnpooledDataSource dataSource;
 
   // OPTIONAL CONFIGURATION FIELDS
+  //最大的活跃连接数
   protected int poolMaximumActiveConnections = 10;
+  //最大空闲连接数
   protected int poolMaximumIdleConnections = 5;
+  //最大的checkOut时长
   protected int poolMaximumCheckoutTime = 20000;
+  //在无法获取连接时,线程需要等待的时间
   protected int poolTimeToWait = 20000;
+  //从连接池中,若获取的是坏连接,允许重新获取新连接的次数,默认值3.
+  //设置的次数不应当超过
+  // poolMaximumIdleConnections 与poolMaximumLocalBadConnectionTolerance之和.
   protected int poolMaximumLocalBadConnectionTolerance = 3;
+  //在检测一个数据库连接是否可用时,会给数据库发送一个测试SQL语句
   protected String poolPingQuery = "NO PING QUERY SET";
+  //是否允许发送测试SQL语句
   protected boolean poolPingEnabled;
+  //当连接超时poolPingConnectionsNotUsedFor毫秒未使用时,会发送一次测试SQL语句,检测连接是否正常
   protected int poolPingConnectionsNotUsedFor;
-
+  //根据数据的URL,用户名和密码生成一个hash值,该hash值用于标记着当前的数据库连接池
   private int expectedConnectionTypeCode;
 
   public PooledDataSource() {
