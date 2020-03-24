@@ -31,23 +31,31 @@ import org.apache.ibatis.logging.LogFactory;
  * Provides a very simple API for accessing resources within an application server.
  * 
  * @author Ben Gunter
+ * 虚拟文件系统 用来查找指定路径下的资源
+ * VFS是一个抽象类,Mybatis 提供了Jboss6VFS和DefaultVFS两个实现类
+ *
  */
 public abstract class VFS {
   private static final Log log = LogFactory.getLog(VFS.class);
 
   /** The built-in implementations. */
+  //记录了mybatis提供的两个VFS实现类
   public static final Class<?>[] IMPLEMENTATIONS = { JBoss6VFS.class, DefaultVFS.class };
 
   /** The list to which implementations are added by {@link #addImplClass(Class)}. */
+  //记录了用户自定义的VFS实现类 VFS.addImplClass()方法会将指定的VFS实现对应的Class对象添加
+          //到USER_IMPLEMENTATIONS 集合中
   public static final List<Class<? extends VFS>> USER_IMPLEMENTATIONS = new ArrayList<>();
 
   /** Singleton instance holder. */
   private static class VFSHolder {
+    //单例模式 记录了全局唯一的VFS对象
     static final VFS INSTANCE = createVFS();
 
     @SuppressWarnings("unchecked")
     static VFS createVFS() {
       // Try the user implementations first, then the built-ins
+      //优先使用用户自定义的VFS实现,如果没有自定义的VFS实现,则使用Mybatis提供的VFS实现
       List<Class<? extends VFS>> impls = new ArrayList<>();
       impls.addAll(USER_IMPLEMENTATIONS);
       impls.addAll(Arrays.asList((Class<? extends VFS>[]) IMPLEMENTATIONS));

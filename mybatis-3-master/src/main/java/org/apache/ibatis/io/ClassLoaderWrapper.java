@@ -22,14 +22,21 @@ import java.net.URL;
  * A class to wrap access to multiple class loaders making them work as one
  *
  * @author Clinton Begin
+ * 封装了ClassLoader以及读取资源文件相关的api
+ * ClassLoaderWrapper可以确保返回给系统使用的是正确的类加载器
+ * 使用ClassLoaderWrapper就如同使用一个ClassLoader对象
+ * ClassLoaderWrapper会按照指定的顺序依次检测其中封装的ClassLoader对象,并从中选取第一个可用的
+ * ClassLoader完成相关功能
  */
 public class ClassLoaderWrapper {
-
+  //应用指定的默认类加载器
   ClassLoader defaultClassLoader;
+  //System ClassLoader
   ClassLoader systemClassLoader;
 
   ClassLoaderWrapper() {
     try {
+      //初始化systemClassLoader 字段
       systemClassLoader = ClassLoader.getSystemClassLoader();
     } catch (SecurityException ignored) {
       // AccessControlException on Google App Engine   
@@ -41,6 +48,7 @@ public class ClassLoaderWrapper {
    *
    * @param resource - the resource to locate
    * @return the resource or null
+   *
    */
   public URL getResourceAsURL(String resource) {
     return getResourceAsURL(resource, getClassLoaders(null));
@@ -139,22 +147,23 @@ public class ClassLoaderWrapper {
 
     URL url;
 
-    for (ClassLoader cl : classLoader) {
+    for (ClassLoader cl : classLoader) {//遍历ClassLoader数组
 
       if (null != cl) {
-
+        //调用ClassLoader.getResource()方法查找指定的资源
         // look for the resource as passed in...
         url = cl.getResource(resource);
 
         // ...but some class loaders want this leading "/", so we'll add it
         // and try again if we didn't find the resource
         if (null == url) {
+          //尝试以"/"开头,再次查找
           url = cl.getResource("/" + resource);
         }
 
         // "It's always in the last place I look for it!"
         // ... because only an idiot would keep looking for it after finding it, so stop looking already.
-        if (null != url) {
+        if (null != url) {//查找到指定资源 返回
           return url;
         }
 
@@ -163,7 +172,7 @@ public class ClassLoaderWrapper {
     }
 
     // didn't find it anywhere.
-    return null;
+    return null;//没找到返回null
 
   }
 
@@ -200,14 +209,14 @@ public class ClassLoaderWrapper {
     throw new ClassNotFoundException("Cannot find class: " + name);
 
   }
-
+  //返回ClassLoader[] 数组
   ClassLoader[] getClassLoaders(ClassLoader classLoader) {
     return new ClassLoader[]{
-        classLoader,
-        defaultClassLoader,
-        Thread.currentThread().getContextClassLoader(),
-        getClass().getClassLoader(),
-        systemClassLoader};
+        classLoader,//参数指定的类加载器
+        defaultClassLoader,//系统指定的默认类加载器
+        Thread.currentThread().getContextClassLoader(),//当前线程绑定的类加载器
+        getClass().getClassLoader(),//加载当前类所使用的类加载器
+        systemClassLoader};//system classloader
   }
 
 }
