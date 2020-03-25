@@ -23,6 +23,11 @@ import org.apache.ibatis.reflection.ArrayUtil;
 
 /**
  * @author Clinton Begin
+ * 表示缓存项的key,在一个Cachekey对象中可以封装多个影响缓存项的因素
+ * MappedStatement 的id
+ * 指定查询结果集的范围也就是RowBounds.offset和RowBounds.limit
+ * 查询所使用的SQL语句,也就是boundSql.getSql()返回的SQL语句,其中可能包含"?"占位符
+ * 用户传递给上述SQL语句的实际参数值
  */
 public class CacheKey implements Cloneable, Serializable {
 
@@ -32,11 +37,15 @@ public class CacheKey implements Cloneable, Serializable {
 
   private static final int DEFAULT_MULTIPLYER = 37;
   private static final int DEFAULT_HASHCODE = 17;
-
+  //参与计算hashcode 默认值为37
   private final int multiplier;
+  //CacheKey对象的hashcode,初始值为17
   private int hashcode;
+  //校验和
   private long checksum;
+  //updateList集合个数
   private int count;
+  //该集合中的所有对象共同决定两个CacheKey是否相同
   // 8/21/2017 - Sonarlint flags this as needing to be marked transient.  While true if content is not serializable, this is not always true and thus should not be marked transient.
   private List<Object> updateList;
 

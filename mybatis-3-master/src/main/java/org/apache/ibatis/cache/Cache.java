@@ -37,24 +37,28 @@ import java.util.concurrent.locks.ReadWriteLock;
  * </pre>
  *
  * @author Clinton Begin
+ * Cache 定义了缓存的基本行为
  */
 
 public interface Cache {
 
   /**
    * @return The identifier of this cache
+   * 该缓存对象的id
    */
   String getId();
 
   /**
    * @param key Can be any object but usually it is a {@link CacheKey}
    * @param value The result of a select.
+   * 向缓存中添加数据 一般情况下,key是CacheKey,value是查询结果
    */
   void putObject(Object key, Object value);
 
   /**
    * @param key The key
    * @return The object stored in the cache.
+   * 根据指定的key,在缓存中查找对应的结果对象
    */
   Object getObject(Object key);
 
@@ -71,11 +75,13 @@ public interface Cache {
    * 
    * @param key The key
    * @return Not used
+   * 删除key对应的缓存项
    */
   Object removeObject(Object key);
 
   /**
    * Clears this cache instance
+   * 清空缓存
    */  
   void clear();
 
@@ -83,6 +89,7 @@ public interface Cache {
    * Optional. This method is not called by the core.
    * 
    * @return The number of elements stored in the cache (not its capacity).
+   * 缓存项的个数该方法不会被Mybatis核心代码使用,所以可以提供空实现
    */
   int getSize();
   
@@ -91,7 +98,8 @@ public interface Cache {
    *  
    * Any locking needed by the cache must be provided internally by the cache provider.
    * 
-   * @return A ReadWriteLock 
+   * @return A ReadWriteLock
+   * 获取读写所,该方法不会被Mybatis核心代码使用,所以可以提供空实现
    */
   ReadWriteLock getReadWriteLock();
 

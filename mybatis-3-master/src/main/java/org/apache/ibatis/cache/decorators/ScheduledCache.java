@@ -21,11 +21,16 @@ import org.apache.ibatis.cache.Cache;
 
 /**
  * @author Clinton Begin
+ * 周期性清理缓存的装饰器
+ *
  */
 public class ScheduledCache implements Cache {
 
   private final Cache delegate;
+  //记录两次缓存清理之间的时间间隔
   protected long clearInterval;
+  //记录了最近一次清理的时间戳 调用方法的时候会根据这两个字段检测是否需要进行清理操作
+  //清理操作会清空缓存中所有缓存项
   protected long lastClear;
 
   public ScheduledCache(Cache delegate) {

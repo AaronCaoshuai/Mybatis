@@ -21,6 +21,7 @@ import org.apache.ibatis.cache.Cache;
 
 /**
  * @author Clinton Begin
+ * 和SynchronizedCollection相似 synchronized控制
  */
 public class SynchronizedCache implements Cache {
 

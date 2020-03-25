@@ -31,6 +31,10 @@ import org.apache.ibatis.io.Resources;
 
 /**
  * @author Clinton Begin
+ * 提供了将value对象序列化的功能,
+ * 添加缓存项时,会将vlaue对应的java对象进行序列化
+ * 并将序列化后的byte[]数组作为value存入缓存
+ * SerializedCache在获取缓存项时,会将缓存项中的byte[]数组反序列化成java对象
  */
 public class SerializedCache implements Cache {
 

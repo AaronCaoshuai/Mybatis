@@ -24,11 +24,14 @@ import org.apache.ibatis.cache.CacheException;
 
 /**
  * @author Clinton Begin
+ * Cache接口基本实现
+ * 装饰器中具体组件实现类
+ * 底层使用HashMap实现
  */
 public class PerpetualCache implements Cache {
 
-  private final String id;
-
+  private final String id;//Cache对象唯一标识
+  //用于记录缓存项的Map对象
   private Map<Object, Object> cache = new HashMap<>();
 
   public PerpetualCache(String id) {

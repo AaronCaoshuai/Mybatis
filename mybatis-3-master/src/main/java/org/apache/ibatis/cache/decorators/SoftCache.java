@@ -30,9 +30,15 @@ import org.apache.ibatis.cache.Cache;
  * @author Clinton Begin
  */
 public class SoftCache implements Cache {
+  //在SoftCache中,最近使用的一部分缓存项不会被GC回收,这就是通过将其value添加到
+  //hardLinksToAvoidGarbageCollection集合中实现的(即有强引用指向其value)
+  //LinkedList<Object> 类型
   private final Deque<Object> hardLinksToAvoidGarbageCollection;
+  //ReferenceQueue 引用队列,用于记录已经被GC回收的缓存项所对应的SoftEntry对象
   private final ReferenceQueue<Object> queueOfGarbageCollectedEntries;
+  //底层被装饰的底层Cache对象
   private final Cache delegate;
+  //强连接的个数 默认是256
   private int numberOfHardLinks;
 
   public SoftCache(Cache delegate) {
@@ -49,7 +55,7 @@ public class SoftCache implements Cache {
 
   @Override
   public int getSize() {
-    removeGarbageCollectedItems();
+    removeGarbageCollectedItems();//清除已经被GC回收的缓存项
     return delegate.getSize();
   }
 
@@ -60,7 +66,7 @@ public class SoftCache implements Cache {
 
   @Override
   public void putObject(Object key, Object value) {
-    removeGarbageCollectedItems();
+    removeGarbageCollectedItems();//清除已经被GC回收的缓存项
     delegate.putObject(key, new SoftEntry(key, value, queueOfGarbageCollectedEntries));
   }
 
@@ -68,16 +74,21 @@ public class SoftCache implements Cache {
   public Object getObject(Object key) {
     Object result = null;
     @SuppressWarnings("unchecked") // assumed delegate cache is totally managed by this cache
+            //从缓存中查找对应的缓存项
     SoftReference<Object> softReference = (SoftReference<Object>) delegate.getObject(key);
+    //检测缓存中是否有对应的缓存项
     if (softReference != null) {
+      //获取SoftReference引用的value
       result = softReference.get();
-      if (result == null) {
-        delegate.removeObject(key);
-      } else {
+      if (result == null) {//已经被GC回收
+        delegate.removeObject(key);//从缓存中清除对应的缓存项
+      } else {//未被垃圾回收
         // See #586 (and #335) modifications need more than a read lock 
         synchronized (hardLinksToAvoidGarbageCollection) {
+          //缓存项的value添加到hardLinksToAvoidGarbageCollection集合中保存
           hardLinksToAvoidGarbageCollection.addFirst(result);
           if (hardLinksToAvoidGarbageCollection.size() > numberOfHardLinks) {
+            //超过numberOfHardLinks,则将最老的缓存项从集合中清除,有点类似于先进先出队列
             hardLinksToAvoidGarbageCollection.removeLast();
           }
         }
@@ -88,17 +99,17 @@ public class SoftCache implements Cache {
 
   @Override
   public Object removeObject(Object key) {
-    removeGarbageCollectedItems();
+    removeGarbageCollectedItems();//清理被GC回收的缓存项
     return delegate.removeObject(key);
   }
 
   @Override
   public void clear() {
     synchronized (hardLinksToAvoidGarbageCollection) {
-      hardLinksToAvoidGarbageCollection.clear();
+      hardLinksToAvoidGarbageCollection.clear();//清理强引用集合
     }
-    removeGarbageCollectedItems();
-    delegate.clear();
+    removeGarbageCollectedItems();//清理被GC回收的缓存项
+    delegate.clear();//清理底层delegate缓存中的缓存项
   }
 
   @Override
@@ -108,17 +119,19 @@ public class SoftCache implements Cache {
 
   private void removeGarbageCollectedItems() {
     SoftEntry sv;
+    //遍历queueOfGarbageCollectedEntries集合
     while ((sv = (SoftEntry) queueOfGarbageCollectedEntries.poll()) != null) {
-      delegate.removeObject(sv.key);
+      delegate.removeObject(sv.key);//将已经被GC回收的value对象对应的缓存项删除
     }
   }
-
+  //SoftCache中缓存项的value是SoftEntry对象 继承了SoftReference<Object>
+  //其中指向key的引用是强引用,而指向value的引用是软引用
   private static class SoftEntry extends SoftReference<Object> {
     private final Object key;
 
     SoftEntry(Object key, Object value, ReferenceQueue<Object> garbageCollectionQueue) {
-      super(value, garbageCollectionQueue);
-      this.key = key;
+      super(value, garbageCollectionQueue);//指向value的引用是软引用,且关联了引用队列
+      this.key = key;//强引用
     }
   }
 
