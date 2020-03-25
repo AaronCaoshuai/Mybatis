@@ -30,16 +30,23 @@ import java.util.Set;
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
+ * Mapper接口及其对应的代理对象工厂的注册中心
+ * 所有配置信息会被解析成相应的对象并记录到Configuration对象中
+ * Configuration是Mybatis全局性的配置文件
  */
 public class MapperRegistry {
-
+  //Configuration是Mybatis全局性的配置文件
+  //所有配置信息会被解析成相应的对象并记录到Configuration对象中
+  //Mybatis全局唯一的配置对象
   private final Configuration config;
+  //记录了Mapper接口与对应的MapperProxyFactory之间的关系
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
   public MapperRegistry(Configuration config) {
     this.config = config;
   }
 
+  //获取实现了Mapper接口的代理对象
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
 	// 根据Mapper接口的类型，从Map集合中获取Mapper代理对象工厂
@@ -59,8 +66,11 @@ public class MapperRegistry {
     return knownMappers.containsKey(type);
   }
 
+  //Mybatis初始化过程中读取映射配置文件以及Mapper接口中的注解信息
+  //并调用该方法填充MapperRegistry.knownMappers集合,该集合的key是Mapper接口对应的Class对象
+  //value为MapperProxyFactory工厂对象 可以为Mapper接口创建代理对象
   public <T> void addMapper(Class<T> type) {
-    if (type.isInterface()) {
+    if (type.isInterface()) {//检测type是否为接口
       // 如果Map集合中已经有该mapper接口的映射，就不需要再存储了
       if (hasMapper(type)) {
         throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
