@@ -26,12 +26,14 @@ import org.apache.ibatis.session.TransactionIsolationLevel;
  * Creates {@link Transaction} instances.
  *
  * @author Clinton Begin
+ * 抽象事务工厂接口
  */
 public interface TransactionFactory {
 
   /**
    * Sets transaction factory custom properties.
    * @param props
+   * 设置属性
    */
   void setProperties(Properties props);
 
@@ -40,6 +42,7 @@ public interface TransactionFactory {
    * @param conn Existing database connection
    * @return Transaction
    * @since 3.1.0
+   * 在指定连接上创建Transaction对象
    */
   Transaction newTransaction(Connection conn);
   
@@ -50,6 +53,7 @@ public interface TransactionFactory {
    * @param autoCommit Desired autocommit
    * @return Transaction
    * @since 3.1.0
+   * 从指定数据源中获取数据库连接 并在此连接上创建Transaction对象
    */
   Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit);
 

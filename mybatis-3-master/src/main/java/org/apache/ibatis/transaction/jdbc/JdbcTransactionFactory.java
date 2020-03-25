@@ -30,6 +30,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
  * @author Clinton Begin
  *
  * @see JdbcTransaction
+ * 具体的工厂类
  */
 public class JdbcTransactionFactory implements TransactionFactory {
 

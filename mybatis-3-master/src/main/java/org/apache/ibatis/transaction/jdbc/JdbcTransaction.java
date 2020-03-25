@@ -34,15 +34,16 @@ import org.apache.ibatis.transaction.TransactionException;
  * @author Clinton Begin
  *
  * @see JdbcTransactionFactory
+ * JdbcTransaction构造函数中会初始化除connection字段之外的其他三个字段
  */
 public class JdbcTransaction implements Transaction {
 
   private static final Log log = LogFactory.getLog(JdbcTransaction.class);
 
-  protected Connection connection;
-  protected DataSource dataSource;
-  protected TransactionIsolationLevel level;
-  protected boolean autoCommit;
+  protected Connection connection;//连接
+  protected DataSource dataSource;//数据源
+  protected TransactionIsolationLevel level;//事务级别
+  protected boolean autoCommit;//是否自动提交
 
   public JdbcTransaction(DataSource ds, TransactionIsolationLevel desiredLevel, boolean desiredAutoCommit) {
     dataSource = ds;
@@ -53,7 +54,7 @@ public class JdbcTransaction implements Transaction {
   public JdbcTransaction(Connection connection) {
     this.connection = connection;
   }
-
+  //获取数据库连接
   @Override
   public Connection getConnection() throws SQLException {
     if (connection == null) {
@@ -92,7 +93,7 @@ public class JdbcTransaction implements Transaction {
       connection.close();
     }
   }
-
+  //设置事务提交级别
   protected void setDesiredAutoCommit(boolean desiredAutoCommit) {
     try {
       if (connection.getAutoCommit() != desiredAutoCommit) {
@@ -109,7 +110,7 @@ public class JdbcTransaction implements Transaction {
           + "Requested setting: " + desiredAutoCommit + ".  Cause: " + e, e);
     }
   }
-
+  //设置事务提交为true
   protected void resetAutoCommit() {
     try {
       if (!connection.getAutoCommit()) {
@@ -130,7 +131,7 @@ public class JdbcTransaction implements Transaction {
       }
     }
   }
-
+  //打开数据连接
   protected void openConnection() throws SQLException {
     if (log.isDebugEnabled()) {
       log.debug("Opening JDBC Connection");

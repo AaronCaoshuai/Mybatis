@@ -30,6 +30,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
  * @author Clinton Begin
  *
  * @see ManagedTransaction
+ * 具体的工厂类
  */
 public class ManagedTransactionFactory implements TransactionFactory {
 

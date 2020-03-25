@@ -33,6 +33,7 @@ import org.apache.ibatis.transaction.Transaction;
  * @author Clinton Begin
  *
  * @see ManagedTransactionFactory
+ * 容器
  */
 public class ManagedTransaction implements Transaction {
 
