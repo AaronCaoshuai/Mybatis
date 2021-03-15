@@ -33,9 +33,10 @@ import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 
 /**
  * @author Clinton Begin
+ * 默认的SqlSessionFactory工厂 生产SqlSession
  */
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
-
+  //持有Configuration对象的引用
   private final Configuration configuration;
 
   public DefaultSqlSessionFactory(Configuration configuration) {

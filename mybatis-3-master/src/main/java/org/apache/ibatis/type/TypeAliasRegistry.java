@@ -138,7 +138,7 @@ public class TypeAliasRegistry {
       // Skip also inner classes. See issue #6
       //过滤掉内部类,接口以及抽象类
       if (!type.isAnonymousClass() && !type.isInterface() && !type.isMemberClass()) {
-        //注册北冥
+        //注册别名
         registerAlias(type);
       }
     }

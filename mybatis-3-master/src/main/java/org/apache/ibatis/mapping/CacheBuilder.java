@@ -36,16 +36,17 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 
 /**
  * @author Clinton Begin
+ * Cache的构建者
  */
 public class CacheBuilder {
-  private final String id;
-  private Class<? extends Cache> implementation;
-  private final List<Class<? extends Cache>> decorators;
-  private Integer size;
-  private Long clearInterval;
-  private boolean readWrite;
-  private Properties properties;
-  private boolean blocking;
+  private final String id;//Cache对象的唯一标识 一般情况下对应映射文件中的namespace
+  private Class<? extends Cache> implementation;//Cache接口的正真实现类,默认值是PerpetualCache
+  private final List<Class<? extends Cache>> decorators;//装饰器集合,默认质保函LruCache.class
+  private Integer size;//Cache大小
+  private Long clearInterval;//清理时间周期
+  private boolean readWrite;//是否可读写
+  private Properties properties;//其他配置信息
+  private boolean blocking;//是否阻塞
 
   public CacheBuilder(String id) {
     this.id = id;
@@ -90,8 +91,12 @@ public class CacheBuilder {
   }
 
   public Cache build() {
+    //如果implementation字段和decorators集合为空,则为其设置默认值
+    //implementation默认值是PerpetualCache.class,decorators集合默认只包含LruCache.class
     setDefaultImplementations();
+    //
     Cache cache = newBaseCacheInstance(implementation, id);
+    //根据<cache>节点下的配置的<property>信息初始化Cache对象
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches
     if (PerpetualCache.class.equals(cache.getClass())) {

@@ -1,7 +1,7 @@
-package com.aaron.mybatisdemo.mapper;
+package com.aaron.mapper;
 
-import com.aaron.mybatisdemo.domain.User;
-import com.aaron.mybatisdemo.queryvo.UserQueryVO;
+import com.aaron.domain.User;
+import com.aaron.queryvo.UserQueryVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

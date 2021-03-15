@@ -1,4 +1,4 @@
-package com.aaron.mybatisdemo.queryvo;
+package com.aaron.queryvo;
 
 /**
  * 用户条件查询对象

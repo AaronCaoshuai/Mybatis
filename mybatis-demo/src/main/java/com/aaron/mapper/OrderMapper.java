@@ -1,6 +1,6 @@
-package com.aaron.mybatisdemo.mapper;
+package com.aaron.mapper;
 
-import com.aaron.mybatisdemo.domain.Order;
+import com.aaron.domain.Order;
 
 import java.util.List;
 

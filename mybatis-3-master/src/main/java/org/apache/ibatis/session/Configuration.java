@@ -96,9 +96,10 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * 全局唯一的Mybatis的配置对象,几乎所有的配置信息都会保存到Configuration
  */
 public class Configuration {
-
+	//保存<environments>节点信息  包括数据源,事务管理和环境id
 	protected Environment environment;
 
 	protected boolean safeRowBoundsEnabled;
@@ -125,10 +126,13 @@ public class Configuration {
 	protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
 	protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
 	protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
-
+	//保存<properties>标签中的信息
 	protected Properties variables = new Properties();
+	//保存<reflectorFactory>节点
 	protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
+	//保存<objectFactory>节点
 	protected ObjectFactory objectFactory = new DefaultObjectFactory();
+	//保存<objectWrapperFactory>节点
 	protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 
 	protected boolean lazyLoadingEnabled = false;
@@ -143,9 +147,11 @@ public class Configuration {
 	 *      300 (google code)</a>
 	 */
 	protected Class<?> configurationFactory;
-
+	//Map集合中，key为mapper接口类型，value为代理对象工厂
 	protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
+	//Interceptor对象都是通过interceptorChain管理的 底层使用ArrayList<Interceptor>实现
 	protected final InterceptorChain interceptorChain = new InterceptorChain();
+	//初始化typeHandlerRegistry 和 typeAliasRegistry
 	protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
 	protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 	protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
@@ -154,6 +160,9 @@ public class Configuration {
 			"Mapped Statements collection")
 					.conflictMessageProducer((savedValue, targetValue) -> ". please check " + savedValue.getResource()
 							+ " and " + targetValue.getResource());
+	//记录Cache的id默认是映射文件的namespace与Cache对象(二级缓存)
+	//StrictMap 继承了HashMap,并在其基础上进行了少许修改
+	//put方法,检测到重复的key则抛出异常,如果没有重复的key则添加key以及value,同时会根据key产生shortKey
 	protected final Map<String, Cache> caches = new StrictMap<>("Caches collection");
 	protected final Map<String, ResultMap> resultMaps = new StrictMap<>("Result Maps collection");
 	protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
@@ -171,6 +180,7 @@ public class Configuration {
 	 * A map holds cache-ref relationship. The key is the namespace that references
 	 * a cache bound to another namespace and the value is the namespace which the
 	 * actual cache is bound to.
+	 * 保存
 	 */
 	protected final Map<String, String> cacheRefMap = new HashMap<>();
 
@@ -745,7 +755,7 @@ public class Configuration {
 	public Map<String, XNode> getSqlFragments() {
 		return sqlFragments;
 	}
-
+	//添加Interceptor到interceptorChain中
 	public void addInterceptor(Interceptor interceptor) {
 		interceptorChain.addInterceptor(interceptor);
 	}

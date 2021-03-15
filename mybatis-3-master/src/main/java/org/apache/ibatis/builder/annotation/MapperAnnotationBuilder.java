@@ -94,6 +94,7 @@ import org.apache.ibatis.type.UnknownTypeHandler;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
+ * 解析注解开发Sql
  */
 public class MapperAnnotationBuilder {
 
@@ -171,7 +172,7 @@ public class MapperAnnotationBuilder {
       }
     }
   }
-
+  //如果存在xml文件 先使用XMLMapperBuilder解析mapper.xml文件
   private void loadXmlResource() {
     // Spring may not know the real resource name so we check a flag
     // to prevent loading again a resource twice

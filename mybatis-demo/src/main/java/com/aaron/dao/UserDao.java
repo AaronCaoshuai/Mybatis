@@ -1,6 +1,6 @@
-package com.aaron.mybatisdemo.dao;
+package com.aaron.dao;
 
-import com.aaron.mybatisdemo.domain.User;
+import com.aaron.domain.User;
 
 import java.util.List;
 

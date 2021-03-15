@@ -1,6 +1,5 @@
-package com.aaron.jdbcdemo;
+package com.aaron.jdbc;
 
-import com.aaron.jdbc.JDBCUtil;
 import org.junit.Test;
 
 import java.sql.*;

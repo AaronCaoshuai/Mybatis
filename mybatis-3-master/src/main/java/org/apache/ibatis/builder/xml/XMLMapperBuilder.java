@@ -51,6 +51,7 @@ import org.apache.ibatis.type.TypeHandler;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
+ * 解析mapper映射文件
  */
 public class XMLMapperBuilder extends BaseBuilder {
 
@@ -102,11 +103,13 @@ public class XMLMapperBuilder extends BaseBuilder {
       configurationElement(parser.evalNode("/mapper"));
       // 标记已经解析
       configuration.addLoadedResource(resource);
-      bindMapperForNamespace();
+      bindMapperForNamespace();//注册Mapper接口
     }
-
+    //处理configurationElement()方法中解析失败的<resultMap>节点
     parsePendingResultMaps();
+    //处理configurationElement()方法中解析失败的<cache-ref>节点
     parsePendingCacheRefs();
+    //处理configurationElement()方法中解析失败的SQL语句节点
     parsePendingStatements();
   }
 
@@ -212,7 +215,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       }
     }
   }
-
+  //解析<cache-ref>节点
   private void cacheRefElement(XNode context) {
     if (context != null) {
       configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute("namespace"));
@@ -227,15 +230,24 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void cacheElement(XNode context) {
     if (context != null) {
+      //获取<cache>节点的type属性,默认值是PERPETUAL perpetual
       String type = context.getStringAttribute("type", "PERPETUAL");
+      //查找type属性对应的Cache接口实现
       Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
+      //获取<cache>节点的eviction属性,默认知识LRU
       String eviction = context.getStringAttribute("eviction", "LRU");
+      //解析eviction属性指定的Cache装饰器类型
       Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);
+      //获取<cache>节点的flushInterval属性,默认值是null
       Long flushInterval = context.getLongAttribute("flushInterval");
+      //获取<cache>节点的size属性,默认值是null
       Integer size = context.getIntAttribute("size");
+      //获取节点readOnly false 和 blocking属性 默认false
       boolean readWrite = !context.getBooleanAttribute("readOnly", false);
       boolean blocking = context.getBooleanAttribute("blocking", false);
+      //获取节点下的子节点,将用于初始化二级缓存
       Properties props = context.getChildrenAsProperties();
+      //通过MapperBuilderAssistant创建Cache对象,并添加到Configuration.cache集合中保存
       builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
     }
   }

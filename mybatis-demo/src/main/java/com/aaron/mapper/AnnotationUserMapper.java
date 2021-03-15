@@ -1,6 +1,6 @@
-package com.aaron.mybatisdemo.mapper;
+package com.aaron.mapper;
 
-import com.aaron.mybatisdemo.domain.User;
+import com.aaron.domain.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

@@ -51,6 +51,7 @@ import org.apache.ibatis.type.TypeHandler;
 
 /**
  * @author Clinton Begin
+ * 构建者助手
  */
 public class MapperBuilderAssistant extends BaseBuilder {
 
@@ -120,7 +121,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.", e);
     }
   }
-
+  //创建Cache对象,并将其添加到Configuration.caches集合保存
   public Cache useNewCache(Class<? extends Cache> typeClass,
       Class<? extends Cache> evictionClass,
       Long flushInterval,
@@ -128,6 +129,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       boolean readWrite,
       boolean blocking,
       Properties props) {
+    //创建Cache对象 建造者模式 CacheBuilder是建造者的角色 而Cache是生成的产品
     Cache cache = new CacheBuilder(currentNamespace)
         .implementation(valueOrDefault(typeClass, PerpetualCache.class))
         .addDecorator(valueOrDefault(evictionClass, LruCache.class))
@@ -137,7 +139,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
         .blocking(blocking)
         .properties(props)
         .build();
+    //将cache对象添加到Configuration.caches集合中保存,其中会将Cache的id作为key
+    //Cache对象本身作为value
     configuration.addCache(cache);
+    //记录当前命名空间使用的cache对象
     currentCache = cache;
     return cache;
   }

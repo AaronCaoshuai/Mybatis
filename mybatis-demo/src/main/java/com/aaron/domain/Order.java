@@ -1,4 +1,4 @@
-package com.aaron.mybatisdemo.domain;
+package com.aaron.domain;
 
 import java.io.Serializable;
 import java.util.Date;

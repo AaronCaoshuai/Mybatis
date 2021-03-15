@@ -1,7 +1,7 @@
-package com.aaron.mybatisdemo.impl;
+package com.aaron.impl;
 
-import com.aaron.mybatisdemo.dao.UserDao;
-import com.aaron.mybatisdemo.domain.User;
+import com.aaron.dao.UserDao;
+import com.aaron.domain.User;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 

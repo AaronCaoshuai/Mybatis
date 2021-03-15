@@ -1,15 +1,15 @@
-package com.aaron.mybatisdemo;
+package com.aaron;
 
 import com.aaron.generator.domain.OrderDetail;
 import com.aaron.generator.mapper.OrderDetailMapper;
-import com.aaron.mybatisdemo.dao.UserDao;
-import com.aaron.mybatisdemo.domain.Order;
-import com.aaron.mybatisdemo.domain.User;
-import com.aaron.mybatisdemo.impl.UserDaoImpl;
-import com.aaron.mybatisdemo.mapper.AnnotationUserMapper;
-import com.aaron.mybatisdemo.mapper.OrderMapper;
-import com.aaron.mybatisdemo.mapper.UserMapper;
-import com.aaron.mybatisdemo.queryvo.UserQueryVO;
+import com.aaron.dao.UserDao;
+import com.aaron.domain.Order;
+import com.aaron.domain.User;
+import com.aaron.impl.UserDaoImpl;
+import com.aaron.mapper.AnnotationUserMapper;
+import com.aaron.mapper.OrderMapper;
+import com.aaron.mapper.UserMapper;
+import com.aaron.queryvo.UserQueryVO;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
